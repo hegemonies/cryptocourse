@@ -23,6 +23,8 @@ func FastExp(x, y, m int64) int64 {
 		if m < 0 {
 			return 1
 		}
+
+		return 1
 	}
 
 	var indexesOfBits []int
