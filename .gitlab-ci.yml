@@ -1,0 +1,7 @@
+stages:
+    - benchmarks
+    
+benchmarks:
+    stage: benchmarks
+    script:
+        -  go test -bench=. -benchmem ./src/1lab/test/*
