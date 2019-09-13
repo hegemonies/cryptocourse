@@ -2,8 +2,14 @@ image: golang:latest
 
 stages:
     - benchmarks
+    - unit_tests
     
 benchmarks:
     stage: benchmarks
     script:
-        -  go test -bench=. -benchmem ./src/1lab/test/*
+        -  go test -bench=. -benchmem ./...
+        
+unit_tests:
+    stage: unit_tests
+    script:
+        - go test ./...
