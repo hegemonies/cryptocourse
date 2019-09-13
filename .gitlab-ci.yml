@@ -1,15 +1,18 @@
 image: golang:latest
 
+before_script:
+    - go version
+
 stages:
-    - benchmarks
-    - unit_tests
+    - tests
+    - tests
     
 benchmarks:
-    stage: benchmarks
+    stage: tests
     script:
         -  go test -bench=. -benchmem ./...
         
 unit_tests:
-    stage: unit_tests
+    stage: tests
     script:
         - go test ./...
