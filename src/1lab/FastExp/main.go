@@ -29,8 +29,8 @@ func FastExp(x, y, m int64) int64 {
 
 	var indexesOfBits []int
 
-	for i := 0; i < 64; i++ {
-		if ((y >> uint(i)) & 0x1) == 1 {
+	for i := 0; i < 65; i++ {
+		if ((y >> uint(i)) & 1) == 1 {
 			indexesOfBits = append(indexesOfBits, i)
 		}
 	}
@@ -47,7 +47,22 @@ func FastExp(x, y, m int64) int64 {
 
 	for i := 0; i < len(indexesOfBits); i++ {
 		result *= prevRes[indexesOfBits[i]]
+		result %= m
 	}
 
 	return result % m
+}
+
+func SmallFastExp(x, y, m uint64) (result uint64) {
+	result = 1
+
+	for ; y != 0; y >>= 1 {
+		if y & 1 == 1 {
+			result *= x % m
+		}
+		result %= m
+		x = (x * x) % m
+	}
+
+	return
 }

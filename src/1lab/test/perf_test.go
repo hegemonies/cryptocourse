@@ -23,11 +23,11 @@ func BenchmarkFastExpStable2(b *testing.B) {
 }
 
 func BenchmarkStdExpStable(b *testing.B) {
-	x := big.NewInt(13)
-	y := big.NewInt(17)
-	m := big.NewInt(15)
-
 	for i := 0; i < b.N; i++ {
+		x := big.NewInt(13)
+		y := big.NewInt(17)
+		m := big.NewInt(15)
+
 		big.NewInt(0).Exp(x, y, m)
 	}
 }
@@ -36,7 +36,30 @@ func BenchmarkFastExpRand(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < b.N; i++ {
-		x, y, m := rand.Int63n(50) + 1, rand.Int63n(50)+ 1, rand.Int63n(50) + 1
+		x, y, m := rand.Int63n(1000000000) + 1, rand.Int63n(1000000000)+ 1, rand.Int63n(1000000000) + 1
 		FastExp.FastExp(x, y, m)
+	}
+}
+
+func BenchmarkSmallFastExpRand(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+
+	for i := 0; i < b.N; i++ {
+		x, y, m := rand.Uint64() % 1000000000 + 1, rand.Uint64() % 1000000000 + 1, rand.Uint64() % 1000000000 + 1
+		FastExp.SmallFastExp(x, y, m)
+	}
+}
+
+func BenchmarkFastExpStableRand(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		x, y, m := rand.Int63n(1000000000) + 1, rand.Int63n(1000000000) + 1, rand.Int63n(1000000000) + 1
+		FastExp.FastExp(x, y, m)
+	}
+}
+
+func BenchmarkSmallFastExpStableRand(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		x, y, m := rand.Uint64() % 1000000000 + 1, rand.Uint64() % 1000000000 + 1, rand.Uint64() % 1000000000 + 1
+		FastExp.SmallFastExp(x, y, m)
 	}
 }

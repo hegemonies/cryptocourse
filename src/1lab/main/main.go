@@ -5,7 +5,8 @@ import (
 	"fmt"
 )
 
+
 func main() {
-	fmt.Println(FastExp.NaivePowWithMod(13, 7, 15))
-	fmt.Println(FastExp.FastExp(2, 10, 15))
+	fmt.Println(FastExp.NaivePowWithMod(159, 894, 513))
+	fmt.Println(FastExp.FastExp(159, 894, 513))
 }
