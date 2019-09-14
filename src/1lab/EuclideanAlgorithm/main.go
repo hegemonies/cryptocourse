@@ -11,18 +11,18 @@ func GCD(a, b int64) int64 {
 	T := make(map[string]int64)
 
 	U["GCD"] = a
-	U["x"]   = 1
-	U["y"]   = 0
+	U["x"] = 1
+	U["y"] = 0
 
 	V["GCD"] = b
-	V["x"]   = 0
-	V["y"]   = 1
+	V["x"] = 0
+	V["y"] = 1
 
 	for V["GCD"] != 0 {
-		q        = U["GCD"] / V["GCD"]
+		q = U["GCD"] / V["GCD"]
 		T["GCD"] = U["GCD"] % V["GCD"]
-		T["x"]   = U["x"] - q * V["x"]
-		T["y"]   = U["y"] - q * V["y"]
+		T["x"] = U["x"] - q * V["x"]
+		T["y"] = U["y"] - q * V["y"]
 		swapMap(U, V)
 		swapMap(V, T)
 	}

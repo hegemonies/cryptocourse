@@ -71,7 +71,7 @@ func BenchmarkEuclideanAlgoStable(b *testing.B) {
 	}
 }
 
-func BenchmarkEuclideanAlgoRandStalbe(b *testing.B) {
+func BenchmarkEuclideanAlgoRandStable(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		EuclideanAlgorithm.GCD(rand.Int63(), rand.Int63())
 	}

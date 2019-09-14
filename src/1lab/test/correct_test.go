@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	MAX_NUMBER = 100000000
+	MaxNumber = 100000000
 )
 
 func TestFastExpCorrectStable(t *testing.T) {
@@ -29,7 +29,7 @@ func TestFastExpCorrectRand(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < 10000000; i++ {
-		x, y, m := rand.Int63n(MAX_NUMBER) + 1, rand.Int63n(MAX_NUMBER) + 1, rand.Int63n(MAX_NUMBER) + 1
+		x, y, m := rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1
 
 		in := FastExp.FastExp(x, y, m)
 		wait := FastExp.NaivePowWithMod(x, y, m)
@@ -44,7 +44,7 @@ func TestSmallFastExpCorrectRand(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < 100000; i++ {
-		x, y, m := rand.Uint64() % MAX_NUMBER + 1, rand.Uint64() % MAX_NUMBER + 1, rand.Uint64() % MAX_NUMBER + 1
+		x, y, m := rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
 
 		in := FastExp.SmallFastExp(x, y, m)
 		wait := FastExp.NaivePowWithMod(int64(x), int64(y), int64(m))
@@ -59,8 +59,7 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < 100000; i++ {
-		a, b := rand.Int63n(MAX_NUMBER), rand.Int63n(MAX_NUMBER)
-
+		a, b := rand.Int63n(MaxNumber), rand.Int63n(MaxNumber)
 
 		in := EuclideanAlgorithm.GCD(a, b)
 		wait := big.NewInt(0).GCD(big.NewInt(0), big.NewInt(0), big.NewInt(a), big.NewInt(b)).Int64()
