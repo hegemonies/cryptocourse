@@ -5,8 +5,9 @@ import (
 	"math/rand"
 	"time"
 
-	"testing"
+	"../EuclideanAlgorithm"
 	"../FastExp"
+	"testing"
 )
 
 func BenchmarkFastExpStable(b *testing.B) {
@@ -61,5 +62,25 @@ func BenchmarkSmallFastExpStableRand(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		x, y, m := rand.Uint64() % 1000000000 + 1, rand.Uint64() % 1000000000 + 1, rand.Uint64() % 1000000000 + 1
 		FastExp.SmallFastExp(x, y, m)
+	}
+}
+
+func BenchmarkEuclideanAlgoStable(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		EuclideanAlgorithm.GCD(28, 19)
+	}
+}
+
+func BenchmarkEuclideanAlgoRandStalbe(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		EuclideanAlgorithm.GCD(rand.Int63(), rand.Int63())
+	}
+}
+
+func BenchmarkEuclideanAlgoRand(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+
+	for i := 0; i < b.N; i++ {
+		EuclideanAlgorithm.GCD(rand.Int63(), rand.Int63())
 	}
 }
