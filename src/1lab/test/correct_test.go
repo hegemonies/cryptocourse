@@ -71,10 +71,10 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 }
 
 func TestPrimeFunc(t *testing.T) {
-	var testingNumber int64 = 0
+	var testingNumber uint64 = 0
 	for ; testingNumber < 10000000; testingNumber++ {
 		in := Diffie_Hellman.IsPrime(testingNumber)
-		wait := big.NewInt(testingNumber).ProbablyPrime(0)
+		wait := big.NewInt(int64(testingNumber)).ProbablyPrime(0)
 
 		if in != wait {
 			t.Errorf("Expected %v, got %v (testing number = %d)", wait, in, testingNumber)
