@@ -1,13 +1,13 @@
 package test
 
 import (
+	Diffie_Hellman "cryptocrouse/src/1lab/Diffie-Hellman"
+	"cryptocrouse/src/1lab/EuclideanAlgorithm"
+	"cryptocrouse/src/1lab/FastExp"
 	"math/big"
 	"math/rand"
 	"testing"
 	"time"
-
-	"../EuclideanAlgorithm"
-	"../FastExp"
 )
 
 const (
@@ -67,6 +67,18 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 
 		if in != wait {
 			t.Errorf("i = %d Expected %d, got %d (a = %d, b = %d)", i, wait, in, a, b)
+		}
+	}
+}
+
+func TestPrimeFunc(t *testing.T) {
+	var testingNumber int64 = 0
+	for ; testingNumber < 10000000; testingNumber++ {
+		in := Diffie_Hellman.IsPrime(testingNumber)
+		wait := big.NewInt(testingNumber).ProbablyPrime(0)
+
+		if in != wait {
+			t.Errorf("Expected %v, got %v (testing number = %d)", wait, in, testingNumber)
 		}
 	}
 }

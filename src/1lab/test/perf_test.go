@@ -1,12 +1,12 @@
 package test
 
 import (
+	"cryptocrouse/src/1lab/EuclideanAlgorithm"
+	"cryptocrouse/src/1lab/FastExp"
 	"math/big"
 	"math/rand"
 	"time"
 
-	"../EuclideanAlgorithm"
-	"../FastExp"
 	"testing"
 )
 

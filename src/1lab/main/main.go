@@ -1,8 +1,8 @@
 package main
 
 import (
-	"../EuclideanAlgorithm"
-	"../FastExp"
+	"cryptocrouse/src/1lab/EuclideanAlgorithm"
+	"cryptocrouse/src/1lab/FastExp"
 	"fmt"
 	"math/big"
 )
