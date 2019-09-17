@@ -23,6 +23,11 @@ func (system *CryptoSystem) Init() {
 func (system *CryptoSystem) setPrimeNumbers() {
 	system.q = generatePrimeNumber()
 	system.p = 2 * system.q + 1
+	for !IsPrime(system.p) {
+		system.q = generatePrimeNumber()
+		system.p = 2 * system.q + 1
+	}
+
 	system.g = rand.Uint64() % system.p
 
 	for SmallFastExp(system.g, system.q, system.p) == 1 {
