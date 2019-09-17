@@ -105,9 +105,29 @@ func TestConnectionUser(t *testing.T) {
 }
 
 func TestShanksAlgo(t *testing.T) {
+	var a, p, y uint64 = 5, 23, 3
+	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	var wait uint64 = 16
+
+	if in != wait {
+		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", wait, in, a, p, y)
+	}
+}
+
+func TestShanksAlgo2(t *testing.T) {
 	var a, p, y uint64 = 2, 23, 9
 	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 	var wait uint64 = 5
+
+	if in != wait {
+		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", wait, in, a, p, y)
+	}
+}
+
+func TestShanksAlgo3(t *testing.T) {
+	var a, p, y uint64 = 13, 15, 13
+	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	var wait uint64 = 1
 
 	if in != wait {
 		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", wait, in, a, p, y)
