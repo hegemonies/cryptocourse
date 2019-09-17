@@ -1,7 +1,7 @@
 package test
 
 import (
-	Diffie_Hellman "cryptocrouse/src/1lab/Diffie-Hellman"
+	DF "cryptocrouse/src/1lab/Diffie-Hellman"
 	"cryptocrouse/src/1lab/EuclideanAlgorithm"
 	"cryptocrouse/src/1lab/FastExp"
 	"math/big"
@@ -12,6 +12,7 @@ import (
 
 const (
 	MaxNumber = 100000000
+	MaxCountTest = 100000
 )
 
 func TestFastExpCorrectStable(t *testing.T) {
@@ -28,7 +29,7 @@ func TestFastExpCorrectStable(t *testing.T) {
 func TestFastExpCorrectRand(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
-	for i := 0; i < 10000000; i++ {
+	for i := 0; i < MaxCountTest; i++ {
 		x, y, m := rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1
 
 		in := FastExp.FastExp(x, y, m)
@@ -43,7 +44,7 @@ func TestFastExpCorrectRand(t *testing.T) {
 func TestSmallFastExpCorrectRand(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
-	for i := 0; i < 100000; i++ {
+	for i := 0; i < MaxCountTest; i++ {
 		x, y, m := rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
 
 		in := FastExp.SmallFastExp(x, y, m)
@@ -58,7 +59,7 @@ func TestSmallFastExpCorrectRand(t *testing.T) {
 func TestEuclideanAlgoRandStable(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
-	for i := 0; i < 100000; i++ {
+	for i := 0; i < MaxCountTest; i++ {
 		a, b := rand.Int63n(MaxNumber), rand.Int63n(MaxNumber)
 
 		in := EuclideanAlgorithm.GCD(a, b)
@@ -71,13 +72,33 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 }
 
 func TestPrimeFunc(t *testing.T) {
-	var testingNumber uint64 = 0
-	for ; testingNumber < 10000000; testingNumber++ {
-		in := Diffie_Hellman.IsPrime(testingNumber)
+	var testingNumber uint64 = 2
+	for ; testingNumber < MaxCountTest; testingNumber++ {
+		in := DF.IsPrime(testingNumber)
 		wait := big.NewInt(int64(testingNumber)).ProbablyPrime(0)
 
 		if in != wait {
 			t.Errorf("Expected %v, got %v (testing number = %d)", wait, in, testingNumber)
+		}
+	}
+}
+
+func TestConnectionUser(t *testing.T) {
+	cryptoSystem := DF.CryptoSystem{}
+	alice := "Alice"
+	bob := "Bob"
+
+	for i := 0; i < MaxCountTest; i++ {
+
+		cryptoSystem.Init()
+		_ = cryptoSystem.AddUser(alice)
+		_ = cryptoSystem.AddUser(bob)
+		cryptoSystem.ConnectUsers(alice, bob)
+
+		result := cryptoSystem.CheckConnection(alice, bob)
+
+		if result != true {
+			t.Errorf("Expected %v, got %v", true, result)
 		}
 	}
 }

@@ -1,10 +1,12 @@
 package test
 
 import (
+	DF "cryptocrouse/src/1lab/Diffie-Hellman"
 	"cryptocrouse/src/1lab/EuclideanAlgorithm"
 	"cryptocrouse/src/1lab/FastExp"
 	"math/big"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"testing"
@@ -82,5 +84,30 @@ func BenchmarkEuclideanAlgoRand(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		EuclideanAlgorithm.GCD(rand.Int63(), rand.Int63())
+	}
+}
+
+func BenchmarkDiffieHallmanAlgo(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+
+	cryptoSystem := DF.CryptoSystem{}
+	cryptoSystem.Init()
+
+	countUsers := b.N
+
+	usersA := make([]string, 0, countUsers)
+	for i := 0; i < countUsers; i++ {
+		usersA = append(usersA, strconv.Itoa(rand.Int()))
+	}
+
+	usersB := make([]string, 0, countUsers)
+	for i := 0; i < countUsers; i++ {
+		usersB = append(usersB, strconv.Itoa(rand.Int()))
+	}
+
+	for i := 0; i < b.N; i++ {
+		cryptoSystem.AddUser(usersA[i])
+		cryptoSystem.AddUser(usersB[i])
+		cryptoSystem.ConnectUsers(usersA[i], usersB[i])
 	}
 }

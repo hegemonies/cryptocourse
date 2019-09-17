@@ -66,3 +66,17 @@ func (system *CryptoSystem) ConnectUsers(nameA, nameB string) {
 	system.Users[nameA] = userA
 	system.Users[nameB] = userB
 }
+
+func (system *CryptoSystem) CheckConnection(nameA, nameB string) bool {
+	userA, ok := system.Users[nameA]
+	if !ok {
+		return false // todo: need return error
+	}
+
+	userB, ok := system.Users[nameB]
+	if !ok {
+		return false // todo: too
+	}
+
+	return userA.secretKey == userB.secretKey
+}
