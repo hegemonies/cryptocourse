@@ -8,9 +8,10 @@ import (
 )
 
 type CryptoSystem struct {
-	Users 	map[string]User
-	p 		uint64
-	g		uint64
+	Users map[string]User
+	q     uint64
+	p     uint64
+	g     uint64
 }
 
 func (system *CryptoSystem) Init() {
@@ -20,11 +21,11 @@ func (system *CryptoSystem) Init() {
 }
 
 func (system *CryptoSystem) setPrimeNumbers() {
-	q := generatePrimeNumber()
-	system.p = 2 * q + 1
+	system.q = generatePrimeNumber()
+	system.p = 2 * system.q + 1
 	system.g = rand.Uint64() % system.p
 
-	for SmallFastExp(system.g, q, system.p) == 1 {
+	for SmallFastExp(system.g, system.q, system.p) == 1 {
 		if system.g = rand.Uint64() % system.p; system.g < 2 {
 			system.g++
 		}
@@ -34,27 +35,34 @@ func (system *CryptoSystem) setPrimeNumbers() {
 func (system *CryptoSystem) AddUser(name string) (err error) {
 	user := User{}
 	user.Name = name
-	user.privateKey = system.generatePrivateKey()
-	user.PublicKey = system.generatePublicKey(user.privateKey)
+	user.GeneratePrivateKey(system.p)
+	user.GeneratePublicKey(system.p, system.g)
 	system.Users[name] = user
 	return
 }
 
-func (system *CryptoSystem) generatePrivateKey() (privateKey uint64) {
-	if privateKey = rand.Uint64() % system.p; privateKey < 1 {
-		privateKey++
-	}
-	return
-}
-
-func (system *CryptoSystem) generatePublicKey(privateKey uint64) (publicKey uint64) {
-	publicKey = SmallFastExp(system.g, privateKey, system.p)
-	return
-}
-
 func (system *CryptoSystem) PrintUsers() {
-	fmt.Println("Name\t\tPrivateKey  \t\tPublicKey")
+	fmt.Printf("q = %d\tp = %d\tg = %d\n", system.q, system.p, system.g)
+	fmt.Printf("%12s%15s%15s%15s\n", "Name", "Private key", "Public key", "Secret key")
 	for _, user := range system.Users {
-		fmt.Printf("%v\t\t%v\t\t%v\n", user.Name, user.privateKey, user.PublicKey)
+		fmt.Printf("%12s%15d%15d%15d\n", user.Name, user.privateKey, user.PublicKey, user.secretKey)
 	}
+}
+
+func (system *CryptoSystem) ConnectUsers(nameA, nameB string) {
+	userA, ok := system.Users[nameA]
+	if !ok {
+		return // todo: need return error
+	}
+
+	userB, ok := system.Users[nameB]
+	if !ok {
+		return // todo: too
+	}
+
+	userA.GenerateSecretKey(userB.PublicKey, system.p)
+	userB.GenerateSecretKey(userA.PublicKey, system.p)
+
+	system.Users[nameA] = userA
+	system.Users[nameB] = userB
 }

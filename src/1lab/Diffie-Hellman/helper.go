@@ -6,10 +6,6 @@ import (
 )
 
 func IsPrime(x uint64) bool {
-	if x <= 1 {
-		return false
-	}
-
 	b := uint64(math.Pow(float64(x), 0.5))
 
 	var i uint64
@@ -23,8 +19,7 @@ func IsPrime(x uint64) bool {
 }
 
 func generatePrimeNumber() (result uint64) {
-	result = 0
-	for ; IsPrime(result); result = rand.Uint64() {
-	}
+	result = rand.Uint64() % MaxBound
+	for ; !IsPrime(result); result = rand.Uint64() % MaxBound { }
 	return
 }
