@@ -15,8 +15,14 @@ func BabyStepGiantStep(a, p, y uint64) (x uint64) {
 	var i uint64
 	lvalue := initLvalue(a, p, m, k, &i)
 
-	var j uint64
-	rvalue := initRvalue(a, p, y, m, &j)
+	var j uint64 = 1
+	rvalue := initRvalue(y, m)
+
+	// search a ** (i * m) == (a ** j) * y
+	answerIsSearched, i := searchEql(lvalue, rvalue[0])
+	for ; answerIsSearched != true && j < m; j++ {
+		answerIsSearched, i = searchEql(lvalue, nextRvalueElement(j, a, p, rvalue))
+	}
 
 	x = i * m - j
 	return
@@ -32,14 +38,22 @@ func initLvalue(a, p, m, k uint64, i* uint64) []uint64 {
 	return lvalue
 }
 
-func initRvalue(a, p, y, m uint64, j* uint64) []uint64 {
+func initRvalue(y, m uint64) []uint64 {
 	rvalue := make([]uint64, 0, m)
 	rvalue = append(rvalue, y)
-	*j = 1
-	for ; *j < m; *j++ {
-		rvalue = append(rvalue, (rvalue[*j - 1] * a) % p)
-		//for // todo: finish it
-	}
-
 	return rvalue
+}
+
+func nextRvalueElement(j, a, p uint64, rvalue []uint64) uint64 {
+	return (rvalue[j - 1] * a) % p
+}
+
+func searchEql(lvalue []uint64, lastPrime uint64) (bool, uint64) {
+	var i uint64 = uint64(len(lvalue) - 1)
+	for ; i > 0; i-- {
+		if lvalue[i] == lastPrime {
+			return true, i
+		}
+	}
+	return false, 0
 }
