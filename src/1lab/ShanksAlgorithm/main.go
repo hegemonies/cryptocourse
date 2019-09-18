@@ -2,6 +2,7 @@ package ShanksAlgorithm
 
 import (
 	. "cryptocrouse/src/1lab/FastExp"
+	"fmt"
 	"math"
 )
 
@@ -10,10 +11,12 @@ import (
 func BabyStepGiantStep(a, p, y uint64) (x uint64) {
 	m := uint64(math.Pow(float64(p), 0.5))
 	k := m
+	fmt.Printf("m = %d\tk = %d\n", m, k)
 
 	//lvalue := make([]uint64, 0, k)
 	var i uint64
 	lvalue := initLvalue(a, p, m, k, &i)
+	fmt.Printf("lvalue = %v\n", lvalue)
 
 	var j uint64 = 1
 	rvalue := initRvalue(y, m)
@@ -23,6 +26,8 @@ func BabyStepGiantStep(a, p, y uint64) (x uint64) {
 	for ; answerIsSearched != true && j < m; j++ {
 		answerIsSearched, i = searchEql(lvalue, nextRvalueElement(j, a, p, rvalue))
 	}
+
+	fmt.Printf("i = %d\tj = %d\n", i, j)
 
 	x = i * m - j
 	return

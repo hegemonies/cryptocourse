@@ -4,6 +4,7 @@ import (
 	DF "cryptocrouse/src/1lab/Diffie-Hellman"
 	"cryptocrouse/src/1lab/EuclideanAlgorithm"
 	"cryptocrouse/src/1lab/FastExp"
+	"cryptocrouse/src/1lab/ShanksAlgorithm"
 	"math/big"
 	"math/rand"
 	"testing"
@@ -100,5 +101,15 @@ func TestConnectionUser(t *testing.T) {
 		if result != true {
 			t.Errorf("Expected %v, got %v", true, result)
 		}
+	}
+}
+
+func TestShanksAlgo(t *testing.T) {
+	var a, p, y uint64 = 2, 23, 9
+	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	var wait uint64 = 5
+
+	if in != wait {
+		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", wait, in, a, p, y)
 	}
 }
