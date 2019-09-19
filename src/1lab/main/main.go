@@ -1,7 +1,8 @@
 package main
 
 import (
-	. "cryptocrouse/src/1lab/Diffie-Hellman"
+	"cryptocrouse/src/1lab/ShanksAlgorithm"
+	"fmt"
 )
 
 func main() {
@@ -13,10 +14,14 @@ func main() {
 	//															  big.NewInt(0),
 	//															  big.NewInt(28),
 	//															  big.NewInt(19)))
-	cryptoSystem := CryptoSystem{}
-	cryptoSystem.Init()
-	cryptoSystem.AddUser("Alice")
-	cryptoSystem.AddUser("Bob")
-	cryptoSystem.ConnectUsers("Alice", "Bob")
-	cryptoSystem.PrintUsers()
+	//cryptoSystem := CryptoSystem{}
+	//cryptoSystem.Init()
+	//cryptoSystem.AddUser("Alice")
+	//cryptoSystem.AddUser("Bob")
+	//cryptoSystem.ConnectUsers("Alice", "Bob")
+	//cryptoSystem.PrintUsers()
+
+	var a, p, y uint64 = 47, 23, 16
+	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	fmt.Println(in)
 }

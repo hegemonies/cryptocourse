@@ -18,8 +18,12 @@ func IsPrime(x uint64) bool {
 	return true
 }
 
-func generatePrimeNumber() (result uint64) {
+func GeneratePrimeNumber() (result uint64) {
 	result = rand.Uint64() % MaxBound
-	for ; !IsPrime(result); result = rand.Uint64() % MaxBound { }
+	for ; !IsPrime(result); result = rand.Uint64() % MaxBound {
+		if result == 1 {
+			continue
+		}
+	}
 	return
 }

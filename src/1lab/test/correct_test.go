@@ -5,6 +5,7 @@ import (
 	"cryptocrouse/src/1lab/EuclideanAlgorithm"
 	"cryptocrouse/src/1lab/FastExp"
 	"cryptocrouse/src/1lab/ShanksAlgorithm"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"testing"
@@ -30,6 +31,8 @@ func TestFastExpCorrectStable(t *testing.T) {
 func TestFastExpCorrectRand(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
+	t.Parallel()
+
 	for i := 0; i < MaxCountTest; i++ {
 		x, y, m := rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1
 
@@ -44,6 +47,8 @@ func TestFastExpCorrectRand(t *testing.T) {
 
 func TestSmallFastExpCorrectRand(t *testing.T) {
 	rand.Seed(time.Now().Unix())
+
+	t.Parallel()
 
 	for i := 0; i < MaxCountTest; i++ {
 		x, y, m := rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
@@ -60,16 +65,24 @@ func TestSmallFastExpCorrectRand(t *testing.T) {
 func TestEuclideanAlgoRandStable(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
+	countGCD := make(map[int64]uint64)
+
+	t.Parallel()
+
 	for i := 0; i < MaxCountTest; i++ {
 		a, b := rand.Int63n(MaxNumber), rand.Int63n(MaxNumber)
 
 		in := EuclideanAlgorithm.GCD(a, b)
 		wait := big.NewInt(0).GCD(big.NewInt(0), big.NewInt(0), big.NewInt(a), big.NewInt(b)).Int64()
 
+		countGCD[in]++
+
 		if in != wait {
 			t.Errorf("i = %d Expected %d, got %d (a = %d, b = %d)", i, wait, in, a, b)
 		}
 	}
+
+	fmt.Printf("count GCD:\n%v\n", countGCD)
 }
 
 func TestPrimeFunc(t *testing.T) {
@@ -124,12 +137,15 @@ func TestShanksAlgo2(t *testing.T) {
 	}
 }
 
-func TestShanksAlgo3(t *testing.T) {
-	var a, p, y uint64 = 13, 15, 13
-	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
-	var wait uint64 = 1
+func TestShanksAlgoRand(t *testing.T) {
+	//rand.Seed(time.Now().Unix())
 
-	if in != wait {
-		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", wait, in, a, p, y)
+	a, inX, p := rand.Uint64() % 1000 + 1, rand.Uint64() % 1000 + 1, DF.GeneratePrimeNumber()
+	y := FastExp.SmallFastExp(a, inX, p)
+
+	waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+
+	if inX != waitX {
+		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", waitX, inX, a, p, y)
 	}
 }

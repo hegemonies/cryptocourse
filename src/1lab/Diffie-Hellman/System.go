@@ -21,10 +21,10 @@ func (system *CryptoSystem) Init() {
 }
 
 func (system *CryptoSystem) setPrimeNumbers() {
-	system.q = generatePrimeNumber()
+	system.q = GeneratePrimeNumber()
 	system.p = 2 * system.q + 1
 	for !IsPrime(system.p) {
-		system.q = generatePrimeNumber()
+		system.q = GeneratePrimeNumber()
 		system.p = 2 * system.q + 1
 	}
 
