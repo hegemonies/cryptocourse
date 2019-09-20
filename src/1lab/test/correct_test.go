@@ -5,7 +5,6 @@ import (
 	"cryptocrouse/src/1lab/EuclideanAlgorithm"
 	"cryptocrouse/src/1lab/FastExp"
 	"cryptocrouse/src/1lab/ShanksAlgorithm"
-	"fmt"
 	"math/big"
 	"math/rand"
 	"testing"
@@ -82,7 +81,7 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 		}
 	}
 
-	fmt.Printf("count GCD:\n%v\n", countGCD)
+	//fmt.Printf("count GCD:\n%v\n", countGCD)
 }
 
 func TestPrimeFunc(t *testing.T) {
