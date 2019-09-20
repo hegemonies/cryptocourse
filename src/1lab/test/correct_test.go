@@ -7,16 +7,19 @@ import (
 	"cryptocrouse/src/1lab/ShanksAlgorithm"
 	"math/big"
 	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 )
 
 const (
 	MaxNumber = 100000000
-	MaxCountTest = 100000
+	MaxCountTest = 1000
 )
 
 func TestFastExpCorrectStable(t *testing.T) {
+	t.Parallel()
+
 	var x, y, m int64 = 13, 17, 15
 
 	in := FastExp.FastExp(x, y, m)
@@ -28,9 +31,9 @@ func TestFastExpCorrectStable(t *testing.T) {
 }
 
 func TestFastExpCorrectRand(t *testing.T) {
-	rand.Seed(time.Now().Unix())
-
 	t.Parallel()
+
+	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < MaxCountTest; i++ {
 		x, y, m := rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1, rand.Int63n(MaxNumber) + 1
@@ -45,9 +48,9 @@ func TestFastExpCorrectRand(t *testing.T) {
 }
 
 func TestSmallFastExpCorrectRand(t *testing.T) {
-	rand.Seed(time.Now().Unix())
-
 	t.Parallel()
+
+	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < MaxCountTest; i++ {
 		x, y, m := rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
@@ -62,11 +65,11 @@ func TestSmallFastExpCorrectRand(t *testing.T) {
 }
 
 func TestEuclideanAlgoRandStable(t *testing.T) {
+	t.Parallel()
+
 	rand.Seed(time.Now().Unix())
 
 	countGCD := make(map[int64]uint64)
-
-	t.Parallel()
 
 	for i := 0; i < MaxCountTest; i++ {
 		a, b := rand.Int63n(MaxNumber), rand.Int63n(MaxNumber)
@@ -85,6 +88,8 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 }
 
 func TestPrimeFunc(t *testing.T) {
+	t.Parallel()
+
 	var testingNumber uint64 = 2
 	for ; testingNumber < MaxCountTest; testingNumber++ {
 		in := DF.IsPrime(testingNumber)
@@ -97,12 +102,13 @@ func TestPrimeFunc(t *testing.T) {
 }
 
 func TestConnectionUser(t *testing.T) {
+	t.Parallel()
+
 	cryptoSystem := DF.CryptoSystem{}
 	alice := "Alice"
 	bob := "Bob"
 
 	for i := 0; i < MaxCountTest; i++ {
-
 		cryptoSystem.Init()
 		_ = cryptoSystem.AddUser(alice)
 		_ = cryptoSystem.AddUser(bob)
@@ -116,7 +122,33 @@ func TestConnectionUser(t *testing.T) {
 	}
 }
 
+func TestConnectionUserRand(t *testing.T) {
+	t.Parallel()
+
+	rand.Seed(time.Now().Unix())
+
+	cryptoSystem := DF.CryptoSystem{}
+	cryptoSystem.Init()
+
+	for i := 0; i < MaxCountTest; i++ {
+		userA := strconv.Itoa(rand.Int() % MaxNumber)
+		userB := strconv.Itoa(rand.Int() % MaxNumber)
+
+		_ = cryptoSystem.AddUser(userA)
+		_ = cryptoSystem.AddUser(userB)
+		cryptoSystem.ConnectUsers(userA, userB)
+
+		result := cryptoSystem.CheckConnection(userA, userB)
+
+		if result != true {
+			t.Errorf("Expected %v, got %v", true, result)
+		}
+	}
+}
+
 func TestShanksAlgo(t *testing.T) {
+	t.Parallel()
+
 	var a, p, y uint64 = 5, 23, 3
 	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 	var wait uint64 = 16
@@ -127,6 +159,8 @@ func TestShanksAlgo(t *testing.T) {
 }
 
 func TestShanksAlgo2(t *testing.T) {
+	t.Parallel()
+
 	var a, p, y uint64 = 2, 23, 9
 	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 	var wait uint64 = 5
@@ -137,14 +171,101 @@ func TestShanksAlgo2(t *testing.T) {
 }
 
 func TestShanksAlgoRand(t *testing.T) {
-	//rand.Seed(time.Now().Unix())
+	t.Parallel()
 
-	a, inX, p := rand.Uint64() % 1000 + 1, rand.Uint64() % 1000 + 1, DF.GeneratePrimeNumber()
-	y := FastExp.SmallFastExp(a, inX, p)
+	rand.Seed(time.Now().Unix())
 
-	waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	for i := 0; i < 100; i++ {
+		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
+		y := FastExp.SmallFastExp(a, inX, p)
 
-	if inX != waitX {
-		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", waitX, inX, a, p, y)
+		waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+
+		if inX != waitX {
+			testY := FastExp.SmallFastExp(a, waitX, p)
+			if testY != y {
+				t.Errorf("waitX %v, inX %v (a = %d, p = %d, y = %d)", waitX, inX, a, p, y)
+			}
+		}
 	}
+}
+
+func TestShanksAlgoStableMap(t *testing.T) {
+	t.Parallel()
+
+	var a, waitX, p uint64 = 5, 16, 23
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgo3StableMap(t *testing.T) {
+	t.Parallel()
+
+	var a, waitX, p uint64 = 5, 16, 23
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo3(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgo3RandMap(t *testing.T) {
+	rand.Seed(time.Now().Unix())
+
+	t.Parallel()
+
+	countIteration := MaxCountTest
+
+	var bound uint64 = MaxNumber
+
+	for countErrors := 1; countErrors != 0; countErrors = 0 {
+		for i := 0; i < countIteration; i++ {
+			a, waitX, p := rand.Uint64() % bound, rand.Uint64() % bound, rand.Uint64() % bound
+
+			if a == 0 {
+				a += 2
+			}
+			if a == 1 {
+				a++
+			}
+			if waitX == 0 {
+				waitX++
+			}
+			if p == 0 {
+				p += 2
+			}
+			if p == 1 {
+				p++
+			}
+
+			y := FastExp.SmallFastExp(a, waitX, p)
+
+			inX := ShanksAlgorithm.ShanksAlgo3(a, p, y)
+
+			if waitX != inX {
+				testY := FastExp.SmallFastExp(a, inX, p)
+				if testY != y {
+					countErrors++
+					//t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+				}
+			}
+		}
+	}
+
+	//fmt.Printf("%d / %d errors\n", countErrors, countIteration)
 }

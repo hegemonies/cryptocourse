@@ -4,6 +4,7 @@ import (
 	DF "cryptocrouse/src/1lab/Diffie-Hellman"
 	"cryptocrouse/src/1lab/EuclideanAlgorithm"
 	"cryptocrouse/src/1lab/FastExp"
+	"cryptocrouse/src/1lab/ShanksAlgorithm"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -109,5 +110,27 @@ func BenchmarkDiffieHallmanAlgo(b *testing.B) {
 		cryptoSystem.AddUser(usersA[i])
 		cryptoSystem.AddUser(usersB[i])
 		cryptoSystem.ConnectUsers(usersA[i], usersB[i])
+	}
+}
+
+func BenchmarkShanksAlgoRand(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+
+	for i := 0; i < b.N; i++ {
+		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
+		y := FastExp.SmallFastExp(a, inX, p)
+
+		ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	}
+}
+
+func BenchmarkShanksAlgo3Rand(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+
+	for i := 0; i < b.N; i++ {
+		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
+		y := FastExp.SmallFastExp(a, inX, p)
+
+		ShanksAlgorithm.ShanksAlgo3(a, p, y)
 	}
 }
