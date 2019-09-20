@@ -1,6 +1,6 @@
 package ShanksAlgorithm
 
-import "cryptocrouse/src/1lab/FastExp"
+import "cryptocrouse/src/go/FastExp"
 
 func BabyStepGiantStep(a, p, y uint64) (x uint64) {
 	if p <= y {

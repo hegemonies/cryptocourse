@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cryptocrouse/src/1lab/ShanksAlgorithm"
+	"cryptocrouse/src/go/ShanksAlgorithm"
 	"fmt"
 )
 
@@ -26,9 +26,9 @@ func main() {
 	in1 := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 	fmt.Println(in1)
 
-	in2 := ShanksAlgorithm.ShanksAlgo2(a, p, y)
+	in2 := ShanksAlgorithm.ShanksAlgo(a, p, y)
 	fmt.Println(in2)
 
-	in3 := ShanksAlgorithm.ShanksAlgo3(2, 3, 2)
+	in3 := ShanksAlgorithm.ShanksAlgo(2, 3, 2)
 	fmt.Println(in3)
 }

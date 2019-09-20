@@ -1,10 +1,10 @@
 package test
 
 import (
-	DF "cryptocrouse/src/1lab/Diffie-Hellman"
-	"cryptocrouse/src/1lab/EuclideanAlgorithm"
-	"cryptocrouse/src/1lab/FastExp"
-	"cryptocrouse/src/1lab/ShanksAlgorithm"
+	DF "cryptocrouse/src/go/Diffie-Hellman"
+	"cryptocrouse/src/go/EuclideanAlgorithm"
+	"cryptocrouse/src/go/FastExp"
+	"cryptocrouse/src/go/ShanksAlgorithm"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -146,75 +146,13 @@ func TestConnectionUserRand(t *testing.T) {
 	}
 }
 
-func TestShanksAlgo(t *testing.T) {
-	t.Parallel()
-
-	var a, p, y uint64 = 5, 23, 3
-	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
-	var wait uint64 = 16
-
-	if in != wait {
-		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", wait, in, a, p, y)
-	}
-}
-
-func TestShanksAlgo2(t *testing.T) {
-	t.Parallel()
-
-	var a, p, y uint64 = 2, 23, 9
-	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
-	var wait uint64 = 5
-
-	if in != wait {
-		t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d)", wait, in, a, p, y)
-	}
-}
-
-func TestShanksAlgoRand(t *testing.T) {
-	t.Parallel()
-
-	rand.Seed(time.Now().Unix())
-
-	for i := 0; i < 100; i++ {
-		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
-		y := FastExp.SmallFastExp(a, inX, p)
-
-		waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
-
-		if inX != waitX {
-			testY := FastExp.SmallFastExp(a, waitX, p)
-			if testY != y {
-				t.Errorf("waitX %v, inX %v (a = %d, p = %d, y = %d)", waitX, inX, a, p, y)
-			}
-		}
-	}
-}
-
 func TestShanksAlgoStableMap(t *testing.T) {
 	t.Parallel()
 
 	var a, waitX, p uint64 = 5, 16, 23
 	y := FastExp.SmallFastExp(a, waitX, p)
 
-	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 	inX := ShanksAlgorithm.ShanksAlgo(a, p ,y)
-
-	if waitX != inX {
-		testY := FastExp.SmallFastExp(a, inX, p)
-		if testY != y {
-			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
-		}
-	}
-}
-
-func TestShanksAlgo3StableMap(t *testing.T) {
-	t.Parallel()
-
-	var a, waitX, p uint64 = 5, 16, 23
-	y := FastExp.SmallFastExp(a, waitX, p)
-
-	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
-	inX := ShanksAlgorithm.ShanksAlgo3(a, p ,y)
 
 	if waitX != inX {
 		testY := FastExp.SmallFastExp(a, inX, p)
@@ -237,25 +175,19 @@ func TestShanksAlgo3RandMap(t *testing.T) {
 		for i := 0; i < countIteration; i++ {
 			a, waitX, p := rand.Uint64() % bound, rand.Uint64() % bound, rand.Uint64() % bound
 
-			if a == 0 {
-				a += 2
-			}
-			if a == 1 {
-				a++
+			if a == 0 || a == 1 {
+				a = 2
 			}
 			if waitX == 0 {
 				waitX++
 			}
-			if p == 0 {
-				p += 2
-			}
-			if p == 1 {
-				p++
+			if p == 0 || p == 1 {
+				p = 2
 			}
 
 			y := FastExp.SmallFastExp(a, waitX, p)
 
-			inX := ShanksAlgorithm.ShanksAlgo3(a, p, y)
+			inX := ShanksAlgorithm.ShanksAlgo(a, p, y)
 
 			if waitX != inX {
 				testY := FastExp.SmallFastExp(a, inX, p)

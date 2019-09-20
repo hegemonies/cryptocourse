@@ -5,14 +5,8 @@ before_script:
 
 stages:
     - tests
-    - tests
     
-benchmarks:
+tests:
     stage: tests
     script:
         -  go test -bench=. -benchmem ./...
-        
-unit_tests:
-    stage: tests
-    script:
-        - go test ./...

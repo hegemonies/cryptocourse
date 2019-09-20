@@ -1,10 +1,10 @@
 package test
 
 import (
-	DF "cryptocrouse/src/1lab/Diffie-Hellman"
-	"cryptocrouse/src/1lab/EuclideanAlgorithm"
-	"cryptocrouse/src/1lab/FastExp"
-	"cryptocrouse/src/1lab/ShanksAlgorithm"
+	DF "cryptocrouse/src/go/Diffie-Hellman"
+	"cryptocrouse/src/go/EuclideanAlgorithm"
+	"cryptocrouse/src/go/FastExp"
+	"cryptocrouse/src/go/ShanksAlgorithm"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -107,9 +107,20 @@ func BenchmarkDiffieHallmanAlgo(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		cryptoSystem.AddUser(usersA[i])
-		cryptoSystem.AddUser(usersB[i])
+		_ = cryptoSystem.AddUser(usersA[i])
+		_ = cryptoSystem.AddUser(usersB[i])
 		cryptoSystem.ConnectUsers(usersA[i], usersB[i])
+	}
+}
+
+func BenchmarkBabyStepGiantStepRand(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+
+	for i := 0; i < b.N; i++ {
+		a, inX, p := rand.Uint64() %MaxNumber+ 2, rand.Uint64() %MaxNumber+ 1, rand.Uint64() %MaxNumber+ 1
+		y := FastExp.SmallFastExp(a, inX, p)
+
+		ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 	}
 }
 
@@ -117,20 +128,9 @@ func BenchmarkShanksAlgoRand(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < b.N; i++ {
-		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
+		a, inX, p := rand.Uint64() %MaxNumber+ 2, rand.Uint64() %MaxNumber+ 1, rand.Uint64() %MaxNumber+ 1
 		y := FastExp.SmallFastExp(a, inX, p)
 
-		ShanksAlgorithm.BabyStepGiantStep(a, p, y)
-	}
-}
-
-func BenchmarkShanksAlgo3Rand(b *testing.B) {
-	rand.Seed(time.Now().Unix())
-
-	for i := 0; i < b.N; i++ {
-		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
-		y := FastExp.SmallFastExp(a, inX, p)
-
-		ShanksAlgorithm.ShanksAlgo3(a, p, y)
+		ShanksAlgorithm.ShanksAlgo(a, p, y)
 	}
 }

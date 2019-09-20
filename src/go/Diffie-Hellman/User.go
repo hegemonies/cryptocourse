@@ -1,7 +1,7 @@
 package Diffie_Hellman
 
 import (
-	. "cryptocrouse/src/1lab/FastExp"
+	. "cryptocrouse/src/go/FastExp"
 	"math/rand"
 )
 
