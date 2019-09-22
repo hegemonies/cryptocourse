@@ -14,7 +14,7 @@ import (
 
 const (
 	MaxNumber = 100000000
-	MaxCountTest = 100000
+	MaxCountTest = 1000
 )
 
 func TestFastExpCorrectStable(t *testing.T) {
