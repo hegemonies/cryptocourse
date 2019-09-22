@@ -138,17 +138,19 @@ func TestShanksAlgo2(t *testing.T) {
 }
 
 func TestShanksAlgoRand(t *testing.T) {
-	//rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().Unix())
 
-	a, inX, p := rand.Uint64() % 10 + 2, rand.Uint64() % 10 + 1, rand.Uint64() % 10 + 1
-	y := FastExp.SmallFastExp(a, inX, p)
+	for i := 0; i < 100; i++ {
+		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
+		y := FastExp.SmallFastExp(a, inX, p)
 
-	waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+		waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 
-	if inX != waitX {
-		testY := FastExp.SmallFastExp(a, waitX, p)
-		if testY != y {
-			t.Errorf("waitX %v, inX %v (a = %d, p = %d, y = %d)", waitX, inX, a, p, y)
+		if inX != waitX {
+			testY := FastExp.SmallFastExp(a, waitX, p)
+			if testY != y {
+				t.Errorf("waitX %v, inX %v (a = %d, p = %d, y = %d)", waitX, inX, a, p, y)
+			}
 		}
 	}
 }
