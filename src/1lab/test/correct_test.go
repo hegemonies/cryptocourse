@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math/big"
 	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -103,13 +104,34 @@ func TestConnectionUser(t *testing.T) {
 	bob := "Bob"
 
 	for i := 0; i < MaxCountTest; i++ {
-
 		cryptoSystem.Init()
 		_ = cryptoSystem.AddUser(alice)
 		_ = cryptoSystem.AddUser(bob)
 		cryptoSystem.ConnectUsers(alice, bob)
 
 		result := cryptoSystem.CheckConnection(alice, bob)
+
+		if result != true {
+			t.Errorf("Expected %v, got %v", true, result)
+		}
+	}
+}
+
+func TestConnectionUserRand(t *testing.T) {
+	rand.Seed(time.Now().Unix())
+
+	cryptoSystem := DF.CryptoSystem{}
+	cryptoSystem.Init()
+
+	for i := 0; i < MaxCountTest; i++ {
+		userA := strconv.Itoa(rand.Int() % MaxNumber)
+		userB := strconv.Itoa(rand.Int() % MaxNumber)
+
+		_ = cryptoSystem.AddUser(userA)
+		_ = cryptoSystem.AddUser(userB)
+		cryptoSystem.ConnectUsers(userA, userB)
+
+		result := cryptoSystem.CheckConnection(userA, userB)
 
 		if result != true {
 			t.Errorf("Expected %v, got %v", true, result)
