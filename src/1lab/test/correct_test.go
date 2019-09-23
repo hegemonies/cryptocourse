@@ -176,3 +176,138 @@ func TestShanksAlgoRand(t *testing.T) {
 		}
 	}
 }
+
+func TestShanksAlgoStableMap(t *testing.T) {
+	var a, waitX, p uint64 = 5, 16, 23
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgo2StableMap(t *testing.T) {
+	var a, waitX, p uint64 = 5, 16, 23
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo2(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgo4StableMap(t *testing.T) {
+	var a, waitX, p uint64 = 2, 2, 3
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo2(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgo3StableMap(t *testing.T) {
+	var a, waitX, p uint64 = 5, 16, 23
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo3(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgoStableMap2(t *testing.T) {
+	var a, waitX, p uint64 = 13, 17, 15
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgoStableMap3(t *testing.T) {
+	var a, waitX, p uint64 = 875, 825, 302640787
+	y := FastExp.SmallFastExp(a, waitX, p)
+
+	//waitX := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	inX := ShanksAlgorithm.ShanksAlgo(a, p ,y)
+
+	if waitX != inX {
+		testY := FastExp.SmallFastExp(a, inX, p)
+		if testY != y {
+			t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+		}
+	}
+}
+
+func TestShanksAlgo3RandMap(t *testing.T) {
+	rand.Seed(time.Now().Unix())
+
+
+	countIteration := 100
+
+	var bound uint64 = 1000
+
+	for countErrors := 1; countErrors != 0; countErrors = 0 {
+		for i := 0; i < countIteration; i++ {
+			a, waitX, p := rand.Uint64() % bound, rand.Uint64() % bound, rand.Uint64() % bound
+
+			if a == 0 {
+				a += 2
+			}
+			if a == 1 {
+				a++
+			}
+			if waitX == 0 {
+				waitX++
+			}
+			if p == 0 {
+				p += 2
+			}
+			if p == 1 {
+				p++
+			}
+
+			y := FastExp.SmallFastExp(a, waitX, p)
+
+			inX := ShanksAlgorithm.ShanksAlgo3(a, p, y)
+
+			if waitX != inX {
+				testY := FastExp.SmallFastExp(a, inX, p)
+				if testY != y {
+					countErrors++
+					//t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
+				}
+			}
+		}
+	}
+
+	//fmt.Printf("%d / %d errors\n", countErrors, countIteration)
+}

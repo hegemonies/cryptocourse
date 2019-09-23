@@ -22,6 +22,13 @@ func main() {
 	//cryptoSystem.PrintUsers()
 
 	var a, p, y uint64 = 47, 23, 16
-	in := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
-	fmt.Println(in)
+
+	in1 := ShanksAlgorithm.BabyStepGiantStep(a, p, y)
+	fmt.Println(in1)
+
+	in2 := ShanksAlgorithm.ShanksAlgo2(a, p, y)
+	fmt.Println(in2)
+
+	in3 := ShanksAlgorithm.ShanksAlgo3(2, 3, 2)
+	fmt.Println(in3)
 }

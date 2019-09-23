@@ -1,4 +1,11 @@
 package ShanksAlgorithm
+
+import (
+	"cryptocrouse/src/1lab/FastExp"
+	"fmt"
+	"math"
+)
+
 //
 //import (
 //	"cryptocrouse/src/1lab/FastExp"
@@ -76,3 +83,130 @@ package ShanksAlgorithm
 //}
 
 
+// Algorithm with using map
+// (a ** x) mod p = y === lSet = rSet
+// a ** (i * m) = y * (a ** j)
+func ShanksAlgo(a, p, y uint64) (x uint64) {
+	if p <= y {
+		return 0
+	}
+
+	m := uint64(math.Pow(float64(p), 0.5) + 0.5)
+	k := m
+	fmt.Printf("m = %d\tk = %d\n", m, k)
+
+	lSet := make(map[uint64]uint64) // [value]index
+	lSet[FastExp.SmallFastExp(a, m, p)] = 1
+
+	rSet := make(map[uint64]uint64) // [index]value
+	rSet[0] = y % p
+
+	if _, ok := lSet[rSet[0]]; ok {
+		x = 1 * m - 0
+		return
+	}
+
+	var i uint64 = 2
+	var j uint64 = 1
+
+	for i <= k {
+		rSet[j] = nextRightElement(rSet[j - 1], a, p)
+		lSet[nextLeftElement(a, p, m, i)] = i
+
+		var t uint64 = 0
+		for ; t <= j; t++ {
+			if currentJ, ok := lSet[rSet[t]]; ok {
+				i = t
+				j = currentJ
+				fmt.Printf("i = %d\tj = %d\n", i, j)
+				fmt.Printf("rSet = %v\n", rSet)
+				fmt.Printf("lSet = %v\n", lSet)
+				x = i * m - j
+				return
+			}
+		}
+
+		i++
+		j++
+	}
+
+	fmt.Printf("i = %d\tj = %d\n", i, j)
+	//fmt.Printf("rSet = %v\n", rSet)
+	//fmt.Printf("lSet = %v\n", lSet)
+
+	return
+}
+
+func nextRightElement(rvalue, a, p uint64) uint64 {
+	return (rvalue * a) % p
+}
+
+func nextLeftElement(a, p, m, i uint64) uint64 {
+	return FastExp.SmallFastExp(a, i * m, p)
+}
+
+
+func ShanksAlgo2(a, p, y uint64) (x uint64) {
+	if p <= y {
+		return 0
+	}
+
+	m := uint64(math.Pow(float64(p), 0.5) + 0.5)
+	k := m
+	//fmt.Printf("m = %d\tk = %d\n", m, k)
+
+	lSet := make(map[uint64]uint64) // [value]index
+	//rSet := make(map[uint64]uint64) // [index]value
+	//rSet[0] = y % p
+	//rValue := y % p
+
+	var i uint64 = 1
+
+	for ; i <= k; i++ {
+		lSet[FastExp.SmallFastExp(a, i * m, p)] = i
+	}
+
+	var j uint64 = 0
+
+	for ; j < m; j++ {
+		//rSet[j] = (rSet[j - 1] * a) % p
+		//rValue = (rValue * a) % p
+		rValue := (FastExp.SmallFastExp(a, j, p) * y) % p
+
+		if currentJ, ok := lSet[rValue]; ok {
+			j = currentJ
+			x = i * m - j
+			return
+		}
+	}
+
+	return
+}
+
+func ShanksAlgo3(a, p, y uint64) (x uint64) {
+	if p <= y {
+		return 0
+	}
+
+	var n = uint64(math.Sqrt(float64(p))) + 1
+
+	values := make(map[uint64]uint64)
+
+	values[1] = 0
+
+	var i uint64
+	for i = 1; i < n; i++ {
+		values[FastExp.SmallFastExp(a, i * n, p)] = i
+	}
+
+	var j uint64
+	for j = 0; j <= n; j++ {
+		current := (FastExp.SmallFastExp(a, j, p) * y) % p
+
+		if i, ok := values[current]; ok {
+			x = i * n - j
+		}
+	}
+
+	return
+}
