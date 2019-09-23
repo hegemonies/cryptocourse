@@ -123,3 +123,14 @@ func BenchmarkShanksAlgoRand(b *testing.B) {
 		ShanksAlgorithm.BabyStepGiantStep(a, p, y)
 	}
 }
+
+func BenchmarkShanksAlgo3Rand(b *testing.B) {
+	rand.Seed(time.Now().Unix())
+
+	for i := 0; i < b.N; i++ {
+		a, inX, p := rand.Uint64() % MaxNumber + 2, rand.Uint64() % MaxNumber + 1, rand.Uint64() % MaxNumber + 1
+		y := FastExp.SmallFastExp(a, inX, p)
+
+		ShanksAlgorithm.ShanksAlgo3(a, p, y)
+	}
+}

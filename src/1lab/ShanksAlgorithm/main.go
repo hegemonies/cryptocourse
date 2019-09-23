@@ -2,7 +2,6 @@ package ShanksAlgorithm
 
 import (
 	"cryptocrouse/src/1lab/FastExp"
-	"fmt"
 	"math"
 )
 
@@ -93,7 +92,7 @@ func ShanksAlgo(a, p, y uint64) (x uint64) {
 
 	m := uint64(math.Pow(float64(p), 0.5) + 0.5)
 	k := m
-	fmt.Printf("m = %d\tk = %d\n", m, k)
+	//fmt.Printf("m = %d\tk = %d\n", m, k)
 
 	lSet := make(map[uint64]uint64) // [value]index
 	lSet[FastExp.SmallFastExp(a, m, p)] = 1
@@ -118,9 +117,9 @@ func ShanksAlgo(a, p, y uint64) (x uint64) {
 			if currentJ, ok := lSet[rSet[t]]; ok {
 				i = t
 				j = currentJ
-				fmt.Printf("i = %d\tj = %d\n", i, j)
-				fmt.Printf("rSet = %v\n", rSet)
-				fmt.Printf("lSet = %v\n", lSet)
+				//fmt.Printf("i = %d\tj = %d\n", i, j)
+				//fmt.Printf("rSet = %v\n", rSet)
+				//fmt.Printf("lSet = %v\n", lSet)
 				x = i * m - j
 				return
 			}
@@ -130,7 +129,7 @@ func ShanksAlgo(a, p, y uint64) (x uint64) {
 		j++
 	}
 
-	fmt.Printf("i = %d\tj = %d\n", i, j)
+	//fmt.Printf("i = %d\tj = %d\n", i, j)
 	//fmt.Printf("rSet = %v\n", rSet)
 	//fmt.Printf("lSet = %v\n", lSet)
 
