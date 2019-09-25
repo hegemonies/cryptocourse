@@ -74,7 +74,7 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 	for i := 0; i < MaxCountTest; i++ {
 		a, b := rand.Int63n(MaxNumber), rand.Int63n(MaxNumber)
 
-		in := EuclideanAlgorithm.GCD(a, b)
+		in, _, _ := EuclideanAlgorithm.GCD(a, b)
 		wait := big.NewInt(0).GCD(big.NewInt(0), big.NewInt(0), big.NewInt(a), big.NewInt(b)).Int64()
 
 		countGCD[in]++
