@@ -28,6 +28,7 @@ func ShanksAlgo(a, p, y uint64) (x uint64) {
 		current := (FastExp.SmallFastExp(a, j, p) * y) % p
 		if i, ok := values[current]; ok {
 			x = i * n - j
+			return
 		}
 	}
 
