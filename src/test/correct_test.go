@@ -167,37 +167,28 @@ func TestShanksAlgo3RandMap(t *testing.T) {
 
 	t.Parallel()
 
-	countIteration := MaxCountTest
+	for i := 0; i < MaxCountTest; i++ {
+		a, waitX, p := rand.Uint64() % MaxNumber, rand.Uint64() % MaxNumber, rand.Uint64() % MaxNumber
 
-	var bound uint64 = MaxNumber
+		if a == 0 || a == 1 {
+			a = 2
+		}
+		if waitX == 0 {
+			waitX++
+		}
+		if p == 0 || p == 1 {
+			p = 2
+		}
 
-	for countErrors := 1; countErrors != 0; countErrors = 0 {
-		for i := 0; i < countIteration; i++ {
-			a, waitX, p := rand.Uint64() % bound, rand.Uint64() % bound, rand.Uint64() % bound
+		y := FastExp.SmallFastExp(a, waitX, p)
 
-			if a == 0 || a == 1 {
-				a = 2
-			}
-			if waitX == 0 {
-				waitX++
-			}
-			if p == 0 || p == 1 {
-				p = 2
-			}
+		inX := ShanksAlgorithm.ShanksAlgo(a, p, y)
 
-			y := FastExp.SmallFastExp(a, waitX, p)
-
-			inX := ShanksAlgorithm.ShanksAlgo(a, p, y)
-
-			if waitX != inX {
-				testY := FastExp.SmallFastExp(a, inX, p)
-				if testY != y {
-					countErrors++
-					//t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
-				}
+		if waitX != inX {
+			testY := FastExp.SmallFastExp(a, inX, p)
+			if testY != y {
+				t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
 			}
 		}
 	}
-
-	//fmt.Printf("%d / %d errors\n", countErrors, countIteration)
 }
