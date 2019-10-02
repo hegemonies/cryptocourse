@@ -1,8 +1,8 @@
 package EuclideanAlgorithm
 
-func GCD(a, b int64) int64 {
+func GCD(a, b int64) (int64, int64, int64) {
 	if a <= 0 || b <= 0 {
-		return 0
+		return 0, 0, 0
 	}
 
 	var q int64 = 0
@@ -27,7 +27,7 @@ func GCD(a, b int64) int64 {
 		swapMap(V, T)
 	}
 
-	return U["GCD"]
+	return U["GCD"], U["x"], U["y"]
 }
 
 func swapMap(src, dst map[string]int64) {
