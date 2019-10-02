@@ -1,1 +1,5 @@
 package ShamirCode
+
+func ShamirCode() {
+
+}
