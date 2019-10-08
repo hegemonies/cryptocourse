@@ -1,5 +1,0 @@
-package ShamirCode
-
-func ShamirCode() {
-
-}

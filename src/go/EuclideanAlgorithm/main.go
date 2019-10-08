@@ -1,14 +1,14 @@
 package EuclideanAlgorithm
 
-func GCD(a, b int64) (int64, int64, int64) {
+func GCD(a, b uint64) (uint64, uint64, uint64) {
 	if a <= 0 || b <= 0 {
 		return 0, 0, 0
 	}
 
-	var q int64 = 0
-	U := make(map[string]int64)
-	V := make(map[string]int64)
-	T := make(map[string]int64)
+	var q uint64 = 0
+	U := make(map[string]uint64)
+	V := make(map[string]uint64)
+	T := make(map[string]uint64)
 
 	U["GCD"] = a
 	U["x"] = 1
