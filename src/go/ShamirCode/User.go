@@ -28,7 +28,7 @@ func (user *User) generateP() {
 func (user *User) generateC() {
 	var GCD uint64 = 0
 	for ; GCD != 1; {
-		user.c = rand.Uint64()
+		user.c = rand.Uint64() % MaxBound
 		if user.c < 2 {
 			continue
 		}
@@ -49,16 +49,12 @@ func (user *User) GeneratePrivateVariables() {
 	user.generateP()
 	user.generateC()
 	user.generateD()
-
-	fmt.Printf("C*D mod p-1 == 1 : %b\n", ((user.c * user.d) % (user.P - 1)) == 1)
 }
 
 func (user *User) GeneratePrivateVariablesWithP(p uint64) {
 	user.P = p
 	user.generateC()
 	user.generateD()
-
-	fmt.Printf("C*D mod p-1 == 1 : %b\n", ((user.c * user.d) % (user.P - 1)) == 1)
 }
 
 func (user *User) SetMessage(m []uint64) {
@@ -104,4 +100,8 @@ func (user *User) computeXPowerD(X []uint64) []uint64 {
 	}
 
 	return X_
+}
+
+func (user *User) GetMessage() []uint64 {
+	return user.m
 }

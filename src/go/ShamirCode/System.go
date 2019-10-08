@@ -28,9 +28,9 @@ func (system *CryptoSystem) AddUser(name string) (err error) {
 }
 
 func (system *CryptoSystem) PrintUsers() {
-	fmt.Printf("%12s%15s%15s%15s%15s\n", "Name", "P", "C", "D", "Message")
+	fmt.Printf("%12s%15s%30s%30s%50s\n", "Name", "P", "C", "D", "Message")
 	for _, user := range system.Users {
-		user.PrintUserInfo("%12s%15d%15d%15d%15v\n")
+		user.PrintUserInfo("%12s%15d%30d%30d %50v\n")
 	}
 }
 
@@ -59,17 +59,28 @@ func (system *CryptoSystem) SendMessageFromFile(producerName, consumerName, file
 	system.Users[producerName] = producerInSystem
 	system.Users[consumerName] = consumerInSystem
 }
-//
-//func (system *CryptoSystem) CheckConnection(nameA, nameB string) bool {
-//	userA, ok := system.Users[nameA]
-//	if !ok {
-//		return false // todo: need return error
-//	}
-//
-//	userB, ok := system.Users[nameB]
-//	if !ok {
-//		return false // todo: too
-//	}
-//
-//	return userA.secretKey == userB.secretKey
-//}
+
+func (system *CryptoSystem) CheckMessage(producerName, consumerName string) (check bool) {
+	producerInSystem, ok := system.Users[producerName]
+	if !ok {
+		return false // todo: need return error
+	}
+
+	consumerInSystem, ok := system.Users[consumerName]
+	if !ok {
+		return false // todo: too
+	}
+
+	if len(producerInSystem.m) != len(consumerInSystem.m) {
+		return false
+	}
+
+	//for i := 0; i < len(producerInSystem.m); i++ {
+	for i := range producerInSystem.m {
+		if producerInSystem.m[i] != consumerInSystem.m[i] {
+			return false
+		}
+	}
+
+	return true
+}

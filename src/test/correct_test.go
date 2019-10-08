@@ -4,6 +4,7 @@ import (
 	DF "cryptocrouse/src/go/Diffie-Hellman"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
 	"cryptocrouse/src/go/FastExp"
+	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
 	"math/big"
 	"math/rand"
@@ -69,17 +70,17 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 
 	rand.Seed(time.Now().Unix())
 
-	countGCD := make(map[int64]uint64)
+	countGCD := make(map[uint64]uint64)
 
 	for i := 0; i < MaxCountTest; i++ {
-		a, b := rand.Int63n(MaxNumber), rand.Int63n(MaxNumber)
+		a, b := rand.Uint64(), rand.Uint64()
 
 		in, _, _ := EuclideanAlgorithm.GCD(a, b)
-		wait := big.NewInt(0).GCD(big.NewInt(0), big.NewInt(0), big.NewInt(a), big.NewInt(b)).Int64()
+		wait := big.NewInt(0).GCD(big.NewInt(0), big.NewInt(0), big.NewInt(int64(a)), big.NewInt(int64(b))).Int64()
 
 		countGCD[in]++
 
-		if in != wait {
+		if int64(in) != wait {
 			t.Errorf("i = %d Expected %d, got %d (a = %d, b = %d)", i, wait, in, a, b)
 		}
 	}
@@ -190,5 +191,29 @@ func TestShanksAlgo3RandMap(t *testing.T) {
 				t.Errorf("Expected %v, got %v (a = %d, p = %d, y = %d,  testY = %d)", waitX, inX, a, p, y, testY)
 			}
 		}
+	}
+}
+
+func TestShamirCode(t *testing.T) {
+	//rand.Seed(time.Now().Unix())
+
+	//t.Parallel()
+
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := ShamirCode.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	cryptosystem.SendMessageFromFile(producerName, consumerName, "send_data.txt")
+
+	cryptosystem.PrintUsers()
+
+	if cryptosystem.CheckMessage(producerName, consumerName) == false {
+		producer := cryptosystem.Users[producerName]
+		consumer := cryptosystem.Users[consumerName]
+		t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
 	}
 }

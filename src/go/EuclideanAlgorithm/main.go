@@ -30,12 +30,12 @@ func GCD(a, b uint64) (uint64, uint64, uint64) {
 	return U["GCD"], U["x"], U["y"]
 }
 
-func swapMap(src, dst map[string]int64) {
+func swapMap(src, dst map[string]uint64) {
 	if len(src) != len(dst) {
 		return
 	}
 
-	tmpMap := make(map[string]int64)
+	tmpMap := make(map[string]uint64)
 
 	for key, value := range src {
 		tmpMap[key] = value
