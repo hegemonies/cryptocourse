@@ -28,9 +28,9 @@ func (system *CryptoSystem) AddUser(name string) (err error) {
 }
 
 func (system *CryptoSystem) PrintUsers() {
-	fmt.Printf("%12s%15s%30s%30s%50s\n", "Name", "P", "C", "D", "Message")
+	fmt.Printf("%12s%15s%30s%30s %s\n", "Name", "P", "C", "D", "Message")
 	for _, user := range system.Users {
-		user.PrintUserInfo("%12s%15d%30d%30d %50v\n")
+		user.PrintUserInfo("%12s%15d%30d%30d %v\n")
 	}
 }
 
@@ -49,6 +49,32 @@ func (system *CryptoSystem) SendMessageFromFile(producerName, consumerName, file
 	consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
 
 	producerInSystem.SetMessage(FileWrapper.GetMessageFromFileByP(filename, producerInSystem.P))
+
+	X1 := producerInSystem.ComputeX1()
+	X2 := consumerInSystem.ComputeX2(X1)
+	X3 := producerInSystem.ComputeX3(X2)
+	refMessage := consumerInSystem.ComputeX4(X3)
+	consumerInSystem.SetMessage(refMessage)
+
+	system.Users[producerName] = producerInSystem
+	system.Users[consumerName] = consumerInSystem
+}
+
+func (system *CryptoSystem) SendMessage(producerName, consumerName string, data []uint64) {
+	producerInSystem, ok := system.Users[producerName]
+	if !ok {
+		return // todo: need return error
+	}
+
+	consumerInSystem, ok := system.Users[consumerName]
+	if !ok {
+		return // todo: too
+	}
+
+	producerInSystem.GeneratePrivateVariables()
+	consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
+
+	producerInSystem.SetMessage(data)
 
 	X1 := producerInSystem.ComputeX1()
 	X2 := consumerInSystem.ComputeX2(X1)

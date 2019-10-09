@@ -207,7 +207,9 @@ func TestShamirCode(t *testing.T) {
 	_ = cryptosystem.AddUser(producerName)
 	_ = cryptosystem.AddUser(consumerName)
 
-	cryptosystem.SendMessageFromFile(producerName, consumerName, "send_data.txt")
+	data := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+	cryptosystem.SendMessage(producerName, consumerName, data)
 
 	cryptosystem.PrintUsers()
 

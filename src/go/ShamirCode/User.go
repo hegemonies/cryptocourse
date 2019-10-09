@@ -49,12 +49,23 @@ func (user *User) GeneratePrivateVariables() {
 	user.generateP()
 	user.generateC()
 	user.generateD()
+
+	for user.d % MaxBound != user.d {
+		user.generateP()
+		user.generateC()
+		user.generateD()
+	}
 }
 
 func (user *User) GeneratePrivateVariablesWithP(p uint64) {
 	user.P = p
 	user.generateC()
 	user.generateD()
+
+	for user.d % MaxBound != user.d {
+		user.generateC()
+		user.generateD()
+	}
 }
 
 func (user *User) SetMessage(m []uint64) {

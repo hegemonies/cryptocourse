@@ -2,13 +2,16 @@ package FileWrapper
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/binary"
+	"io/ioutil"
 	"log"
 	"os"
 )
 
+// if won't work this
+// then try this: i = binary.LittleEndian.Uint64(bytes)
 func GetMessageFromFileByP(filename string, p uint64) []uint64 {
-	message := make([]uint64, 0 , 0)
-
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -23,16 +26,28 @@ func GetMessageFromFileByP(filename string, p uint64) []uint64 {
 
 	reader := bufio.NewReader(file)
 	countBytes := (getMaxIndexOfBit(p) / 8) + 1
-	buffer := make([]byte, 0, countBytes)
+	buffer := make([]byte, countBytes)
 
-	for {
+	fileInfo, _ := file.Stat()
+	countMessages := fileInfo.Size() / int64(countBytes)
+	message := make([]uint64, 0 , countMessages)
+
+
+	for i := 0; ; i++ {
 		n, err := reader.Read(buffer)
 		if err != nil {
 			break
 		}
+
+		var tmpChunk uint64
+		var j uint64
+		for j = 0; j < uint64(n); j++ {
+			tmpChunk = (tmpChunk << (j * 8)) | uint64(buffer[j])
+		}
+		message = append(message, tmpChunk)
 	}
 
-	return  message
+	return message
 }
 
 func getMaxIndexOfBit(number uint64) (index int) {
@@ -42,5 +57,44 @@ func getMaxIndexOfBit(number uint64) (index int) {
 			index = int(i)
 		}
 	}
+	return
+}
+
+func WriteToFile(filename string, message []uint64, p uint64) {
+	file, fileErr := os.Create(filename)
+	if fileErr != nil {
+		log.Fatal(fileErr)
+		return
+	}
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	buf := new(bytes.Buffer)
+
+	countBytes := (getMaxIndexOfBit(p) / 8) + 1
+
+	for i := 0; i < len(message); i++ {
+		chunk := convertFromUint64ToByte(message[i], countBytes)
+		err := binary.Write(buf, binary.LittleEndian, chunk)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	err1 := ioutil.WriteFile(filename, buf.Bytes(), 0644)
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+}
+
+func convertFromUint64ToByte(from uint64, countBytes int) (to []byte) {
+	buf := make([]byte, 8)
+	binary.LittleEndian.PutUint64(buf, from)
+	to = make([]byte, countBytes)
+	copy(to, buf)
 	return
 }
