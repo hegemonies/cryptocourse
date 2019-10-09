@@ -1,4 +1,4 @@
-package Diffie_Hellman
+package El_GamalCode
 
 import (
 	"math"
@@ -8,14 +8,14 @@ import (
 func IsPrime(x uint64) bool {
 	b := uint64(math.Pow(float64(x), 0.5))
 
-var i uint64
-for i = 2; i <= b; i++ {
-if (x % i) == 0 {
-return false
-}
-}
+	var i uint64
+	for i = 2; i <= b; i++ {
+		if (x % i) == 0 {
+			return false
+		}
+	}
 
-return true
+	return true
 }
 
 func GeneratePrimeNumber() (result uint64) {

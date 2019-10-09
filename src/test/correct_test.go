@@ -2,6 +2,7 @@ package test
 
 import (
 	DF "cryptocrouse/src/go/Diffie-Hellman"
+	El_GamalCode "cryptocrouse/src/go/El-GamalCode"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
 	"cryptocrouse/src/go/FastExp"
 	"cryptocrouse/src/go/ShamirCode"
@@ -195,14 +196,32 @@ func TestShanksAlgo3RandMap(t *testing.T) {
 }
 
 func TestShamirCode(t *testing.T) {
-	//rand.Seed(time.Now().Unix())
-
-	//t.Parallel()
-
 	producerName := "Alice"
 	consumerName := "Bob"
 
 	cryptosystem := ShamirCode.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	data := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+	cryptosystem.SendMessage(producerName, consumerName, data)
+
+	cryptosystem.PrintUsers()
+
+	if cryptosystem.CheckMessage(producerName, consumerName) == false {
+		producer := cryptosystem.Users[producerName]
+		consumer := cryptosystem.Users[consumerName]
+		t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+	}
+}
+
+func TestEl_GamalCode(t *testing.T) {
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := El_GamalCode.CryptoSystem{}
 	cryptosystem.Init()
 	_ = cryptosystem.AddUser(producerName)
 	_ = cryptosystem.AddUser(consumerName)
