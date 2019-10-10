@@ -134,3 +134,17 @@ func BenchmarkShanksAlgoRand(b *testing.B) {
 		ShanksAlgorithm.ShanksAlgo(a, p, y)
 	}
 }
+
+func BenchmarkIsPrime(b *testing.B) {
+	var i uint64
+	for i = 0; i < uint64(b.N); i++ {
+		DF.IsPrime(i)
+	}
+}
+
+func BenchmarkIsPrimeGoogle(b *testing.B) {
+	var i uint64
+	for i = 0; i < uint64(b.N); i++ {
+		DF.IsPrimeGoogle(i)
+	}
+}
