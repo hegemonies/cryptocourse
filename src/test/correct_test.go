@@ -2,7 +2,7 @@ package test
 
 import (
 	DF "cryptocrouse/src/go/Diffie-Hellman"
-	El_GamalCode "cryptocrouse/src/go/ElGamalCode"
+	elgamalcode "cryptocrouse/src/go/ElGamalCode"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
 	"cryptocrouse/src/go/FastExp"
 	"cryptocrouse/src/go/ShamirCode"
@@ -226,11 +226,11 @@ func TestShamirCodeFile(t *testing.T) {
 	_ = cryptosystem.AddUser(producerName)
 	_ = cryptosystem.AddUser(consumerName)
 
-	filename_test_data := "test_data.png"
+	filenameTestData := "test_data.png"
 
-	cryptosystem.SendMessageFromFile(producerName, consumerName, filename_test_data)
+	cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
 
-	cryptosystem.PrintUsers()
+	//cryptosystem.PrintUsers()
 
 	if cryptosystem.CheckMessage(producerName, consumerName) == false {
 		producer := cryptosystem.Users[producerName]
@@ -239,11 +239,11 @@ func TestShamirCodeFile(t *testing.T) {
 	}
 }
 
-func TestElGamalCode(t *testing.T) {
+func TestElGamalCodeSimpleData(t *testing.T) {
 	producerName := "Alice"
 	consumerName := "Bob"
 
-	cryptosystem := El_GamalCode.CryptoSystem{}
+	cryptosystem := elgamalcode.CryptoSystem{}
 	cryptosystem.Init()
 	_ = cryptosystem.AddUser(producerName)
 	_ = cryptosystem.AddUser(consumerName)
@@ -251,6 +251,28 @@ func TestElGamalCode(t *testing.T) {
 	data := []uint64{2, 3, 4, 5, 6, 7, 8, 9}
 
 	cryptosystem.SendMessage(producerName, consumerName, data)
+
+	//cryptosystem.PrintUsers()
+
+	if cryptosystem.CheckMessage(producerName, consumerName) == false {
+		producer := cryptosystem.Users[producerName]
+		consumer := cryptosystem.Users[consumerName]
+		t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+	}
+}
+
+func TestElGamalCodeOnFile(t *testing.T) {
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := elgamalcode.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	filenameTestData := "test_data.png"
+
+	cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
 
 	cryptosystem.PrintUsers()
 

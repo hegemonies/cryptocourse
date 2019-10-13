@@ -1,26 +1,23 @@
 package main
 
 import (
+	"cryptocrouse/src/go/ElGamalCode"
 	"cryptocrouse/src/go/FileWrapper"
-	"cryptocrouse/src/go/ShamirCode"
 )
 
 func main() {
 	producerName := "Alice"
 	consumerName := "Bob"
 
-	cryptosystem := ShamirCode.CryptoSystem{}
+	cryptosystem := ElGamalCode.CryptoSystem{}
 	cryptosystem.Init()
 	_ = cryptosystem.AddUser(producerName)
 	_ = cryptosystem.AddUser(consumerName)
 
-	filename_test_data := "test_data.png"
-	//filename_test_data := "test.txt"
+	filenameTestData := "test_data.png"
 
-	cryptosystem.SendMessageFromFile(producerName, consumerName, filename_test_data)
-	consumer := cryptosystem.Users[consumerName]
+	cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
 
-	cryptosystem.PrintUsers()
-
-	FileWrapper.WriteToFile("1" + filename_test_data, consumer.GetMessage())
+	consumerInSystem := cryptosystem.Users[consumerName]
+	FileWrapper.WriteToFile("1" + filenameTestData, consumerInSystem.GetMessage())
 }

@@ -31,7 +31,7 @@ func (user *User) generateRandomK(limit uint64) (k uint64) {
 	return
 }
 
-func (user *User) EncodeOriginalMessage(g, p uint64) {
+func (user *User) EncodeOriginalMessage(g, p, consumerPublicKey uint64) {
 	if len(user.originMessage) == 0 {
 		return // todo: need return error
 	}
@@ -41,7 +41,7 @@ func (user *User) EncodeOriginalMessage(g, p uint64) {
 
 		chunk := Message{}
 		chunk.s = FastExp.SmallFastExp(g, k, p)
-		chunk.m = (user.originMessage[i] * FastExp.SmallFastExp(user.PublicKey, k, p)) % p
+		chunk.m = (user.originMessage[i] * FastExp.SmallFastExp(consumerPublicKey, k, p)) % p
 
 		user.Chunks = append(user.Chunks, chunk)
 	}
