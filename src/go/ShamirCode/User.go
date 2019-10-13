@@ -10,25 +10,34 @@ import (
 
 type User struct {
 	Name       string
-	P          uint64
-	c          uint64
-	d          uint64
+	P          int64
+	c          int64
+	d          int64
 	m          []uint64
 }
 
 func (user *User) generateP() {
-	q := Diffie_Hellman.GeneratePrimeNumber()
+	q := int64(Diffie_Hellman.GeneratePrimeNumber())
 	user.P = 2 * q + 1
-	for !Diffie_Hellman.IsPrime(user.P) {
-		q = Diffie_Hellman.GeneratePrimeNumber()
+
+	if q < 0 || user.P < 0 {
+		user.generateP()
+	}
+
+	for !Diffie_Hellman.IsPrime(uint64(user.P)) {
+		q = int64(Diffie_Hellman.GeneratePrimeNumber())
 		user.P = 2 * q + 1
+
+		if q < 0 || user.P < 0 {
+			user.generateP()
+		}
 	}
 }
 
 func (user *User) generateC() {
-	var GCD uint64 = 0
+	var GCD int64 = 0
 	for ; GCD != 1; {
-		user.c = rand.Uint64() % MaxBound
+		user.c = rand.Int63n(MaxBound)
 		if user.c < 2 {
 			continue
 		}
@@ -37,7 +46,7 @@ func (user *User) generateC() {
 }
 
 func (user *User) generateD() {
-	_, _, y := EuclideanAlgorithm.GCD(user.c, user.P)
+	_, _, y := EuclideanAlgorithm.GCD(user.P, user.c)
 	if y < 0 {
 		user.d = user.P + y
 	} else {
@@ -57,7 +66,7 @@ func (user *User) GeneratePrivateVariables() {
 	}
 }
 
-func (user *User) GeneratePrivateVariablesWithP(p uint64) {
+func (user *User) GeneratePrivateVariablesWithP(p int64) {
 	user.P = p
 	user.generateC()
 	user.generateD()
@@ -89,7 +98,7 @@ func (user *User) computeXPowerC(X []uint64) []uint64 {
 	intermediateX := make([]uint64, 0, len(X))
 
 	for i := 0; i < len(X); i++ {
-		intermediateX = append(intermediateX, FastExp.SmallFastExp(X[i], user.c, user.P))
+		intermediateX = append(intermediateX, FastExp.SmallFastExp(X[i], uint64(user.c), uint64(user.P)))
 	}
 
 	return intermediateX
@@ -107,7 +116,7 @@ func (user *User) computeXPowerD(X []uint64) []uint64 {
 	X_ := make([]uint64, 0, len(X))
 
 	for i := 0; i < len(X); i++ {
-		X_ = append(X_, FastExp.SmallFastExp(X[i], user.d, user.P))
+		X_ = append(X_, FastExp.SmallFastExp(X[i], uint64(user.d), uint64(user.P)))
 	}
 
 	return X_
@@ -115,4 +124,12 @@ func (user *User) computeXPowerD(X []uint64) []uint64 {
 
 func (user *User) GetMessage() []uint64 {
 	return user.m
+}
+
+func (user *User) SetC(c int64) {
+	user.c = c
+}
+
+func (user *User) SetD(d int64) {
+	user.d = d
 }

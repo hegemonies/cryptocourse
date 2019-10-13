@@ -27,6 +27,20 @@ func (system *CryptoSystem) AddUser(name string) (err error) {
 	return nil
 }
 
+func (system *CryptoSystem) AddUserWithParams(name string, c, d, p int64) (err error) {
+	user := User{}
+	user.Name = name
+	user.P = p
+	user.c = c
+	user.d = d
+	if _, ok := system.Users[name]; !ok {
+		system.Users[name] = user
+	} else {
+		return nil// todo: need add return error
+	}
+	return nil
+}
+
 func (system *CryptoSystem) PrintUsers() {
 	fmt.Printf("%12s%15s%30s%30s %s\n", "Name", "P", "C", "D", "Message")
 	for _, user := range system.Users {
@@ -48,7 +62,7 @@ func (system *CryptoSystem) SendMessageFromFile(producerName, consumerName, file
 	producerInSystem.GeneratePrivateVariables()
 	consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
 
-	producerInSystem.SetMessage(FileWrapper.GetMessageFromFileByP(filename, producerInSystem.P))
+	producerInSystem.SetMessage(FileWrapper.GetMessageFromFileByP(filename, uint64(producerInSystem.P)))
 
 	X1 := producerInSystem.ComputeX1()
 	X2 := consumerInSystem.ComputeX2(X1)
@@ -71,8 +85,8 @@ func (system *CryptoSystem) SendMessage(producerName, consumerName string, data 
 		return // todo: too
 	}
 
-	producerInSystem.GeneratePrivateVariables()
-	consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
+	//producerInSystem.GeneratePrivateVariables()
+	//consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
 
 	producerInSystem.SetMessage(data)
 
@@ -109,4 +123,11 @@ func (system *CryptoSystem) CheckMessage(producerName, consumerName string) (che
 	}
 
 	return true
+}
+
+func (system *CryptoSystem) UpdateUser(name string, user User) {
+	u, _ := system.Users[name]
+	u.P = user.P
+	u.c = user.c
+	u.d = user.d
 }

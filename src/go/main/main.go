@@ -1,9 +1,5 @@
 package main
 
-import (
-	"cryptocrouse/src/go/FileWrapper"
-)
-
 func main() {
 	//fmt.Println("fast exp naive =", FastExp.NaivePowWithMod(159, 894, 513))
 	//fmt.Println("fast exp my    =", FastExp.FastExp(159, 894, 513))
@@ -32,7 +28,9 @@ func main() {
 	//fmt.Println(in3)
 
 
-	filename := "test_data.png"
-	var p uint64 = 23
-	FileWrapper.WriteToFile("1" + filename, FileWrapper.GetMessageFromFileByP(filename, p), p)
+	//filename := "test_data.png"
+	//var p uint64 = 23
+	//FileWrapper.WriteToFile("1" + filename, FileWrapper.GetMessageFromFileByP(filename, p), p)
+
+
 }

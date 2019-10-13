@@ -71,15 +71,15 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 
 	rand.Seed(time.Now().Unix())
 
-	countGCD := make(map[uint64]uint64)
+	//countGCD := make(map[uint64]uint64)
 
 	for i := 0; i < MaxCountTest; i++ {
-		a, b := rand.Uint64(), rand.Uint64()
+		a, b := rand.Int63n(MaxNumber), rand.Int63n(MaxNumber)
 
 		in, _, _ := EuclideanAlgorithm.GCD(a, b)
 		wait := big.NewInt(0).GCD(big.NewInt(0), big.NewInt(0), big.NewInt(int64(a)), big.NewInt(int64(b))).Int64()
 
-		countGCD[in]++
+		//countGCD[in]++
 
 		if int64(in) != wait {
 			t.Errorf("i = %d Expected %d, got %d (a = %d, b = %d)", i, wait, in, a, b)
@@ -201,10 +201,28 @@ func TestShamirCode(t *testing.T) {
 
 	cryptosystem := ShamirCode.CryptoSystem{}
 	cryptosystem.Init()
-	_ = cryptosystem.AddUser(producerName)
-	_ = cryptosystem.AddUser(consumerName)
+	//_ = cryptosystem.AddUser(producerName)
+	//_ = cryptosystem.AddUser(consumerName)
+	//
+	//producerInSystem := cryptosystem.Users[producerName]
+	//producerInSystem.SetC(5)
+	//producerInSystem.SetD(9)
+	//producerInSystem.P = 23
+	//
+	//consumerInSystem := cryptosystem.Users[consumerName]
+	//consumerInSystem.SetC(7)
+	//consumerInSystem.SetD(19)
+	//consumerInSystem.P = 23
 
-	data := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	//cryptosystem.Users[producerName] = producerInSystem
+	//cryptosystem.Users[consumerName] = consumerInSystem
+	//cryptosystem.UpdateUser(producerName, producerInSystem)
+	//cryptosystem.UpdateUser(consumerName, consumerInSystem)
+
+	_ = cryptosystem.AddUserWithParams(producerName, 5, 9, 23)
+	_ = cryptosystem.AddUserWithParams(consumerName, 7, 19, 23)
+
+	data := []uint64{2, 3, 4, 5, 6, 7, 8, 9}
 
 	cryptosystem.SendMessage(producerName, consumerName, data)
 

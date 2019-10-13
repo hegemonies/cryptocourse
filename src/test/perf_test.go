@@ -76,7 +76,7 @@ func BenchmarkEuclideanAlgoStable(b *testing.B) {
 
 func BenchmarkEuclideanAlgoRandStable(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		EuclideanAlgorithm.GCD(rand.Uint64(), rand.Uint64())
+		EuclideanAlgorithm.GCD(rand.Int63n(MaxNumber), rand.Int63n(MaxNumber))
 	}
 }
 
@@ -84,7 +84,7 @@ func BenchmarkEuclideanAlgoRand(b *testing.B) {
 	rand.Seed(time.Now().Unix())
 
 	for i := 0; i < b.N; i++ {
-		EuclideanAlgorithm.GCD(rand.Uint64(), rand.Uint64())
+		EuclideanAlgorithm.GCD(rand.Int63n(MaxNumber), rand.Int63n(MaxNumber))
 	}
 }
 
