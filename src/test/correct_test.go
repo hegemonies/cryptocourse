@@ -2,7 +2,7 @@ package test
 
 import (
 	DF "cryptocrouse/src/go/Diffie-Hellman"
-	El_GamalCode "cryptocrouse/src/go/El-GamalCode"
+	El_GamalCode "cryptocrouse/src/go/ElGamalCode"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
 	"cryptocrouse/src/go/FastExp"
 	"cryptocrouse/src/go/ShamirCode"
@@ -248,7 +248,7 @@ func TestElGamalCode(t *testing.T) {
 	_ = cryptosystem.AddUser(producerName)
 	_ = cryptosystem.AddUser(consumerName)
 
-	data := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	data := []uint64{2, 3, 4, 5, 6, 7, 8, 9}
 
 	cryptosystem.SendMessage(producerName, consumerName, data)
 

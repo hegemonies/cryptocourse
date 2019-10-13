@@ -1,4 +1,4 @@
-package El_GamalCode
+package ElGamalCode
 
 import (
 	"cryptocrouse/src/go/FastExp"

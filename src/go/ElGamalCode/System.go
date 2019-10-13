@@ -1,4 +1,4 @@
-package El_GamalCode
+package ElGamalCode
 
 import (
 	"cryptocrouse/src/go/FastExp"
@@ -61,7 +61,7 @@ func (system *CryptoSystem) PrintUsers() { // refactor this
 	fmt.Printf("q = %d\tp = %d\tg = %d\n", system.q, system.p, system.g)
 	fmt.Printf("%12s%15s%15s%15s\n", "Name", "Private key", "Public key", "Secret key")
 	for _, user := range system.Users {
-		fmt.Printf("%12s%15d%15d%15d\n", user.Name, user.privateKey, user.PublicKey, )
+		fmt.Printf("%12s%15d%15d %v\n", user.Name, user.privateKey, user.PublicKey, user.originMessage)
 	}
 }
 

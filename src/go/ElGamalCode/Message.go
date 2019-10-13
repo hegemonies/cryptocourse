@@ -1,4 +1,4 @@
-package El_GamalCode
+package ElGamalCode
 
 type Message struct {
 	m uint64 // b
