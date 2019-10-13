@@ -89,6 +89,31 @@ func GetMessageFromFile(filename string) []uint64 {
 	return message
 }
 
+func GetMessageFromFileInBytes(filename string) []byte {
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	reader := bufio.NewReader(file)
+	fileInfo, _ := file.Stat()
+	buffer := make([]byte, fileInfo.Size())
+
+	_, err = reader.Read(buffer)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return buffer
+}
+
 func getMaxIndexOfBit(number uint64) (index int) {
 	var i uint64
 	for i = 0; i < 64; i++ {

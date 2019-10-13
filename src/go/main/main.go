@@ -1,23 +1,61 @@
 package main
 
 import (
-	"cryptocrouse/src/go/ElGamalCode"
-	"cryptocrouse/src/go/FileWrapper"
+	"bufio"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"os"
 )
 
 func main() {
-	producerName := "Alice"
-	consumerName := "Bob"
-
-	cryptosystem := ElGamalCode.CryptoSystem{}
-	cryptosystem.Init()
-	_ = cryptosystem.AddUser(producerName)
-	_ = cryptosystem.AddUser(consumerName)
-
 	filenameTestData := "test_data.png"
 
-	cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
+	file, err := os.Open(filenameTestData)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
-	consumerInSystem := cryptosystem.Users[consumerName]
-	FileWrapper.WriteToFile("1" + filenameTestData, consumerInSystem.GetMessage())
+	defer func() {
+		if err = file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	reader := bufio.NewReader(file)
+	fileInfo, _ := file.Stat()
+	bufferX := make([]byte, fileInfo.Size())
+	_, err = reader.Read(bufferX)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bufferY := make([]byte, fileInfo.Size())
+	rand.Read(bufferY)
+
+	bufferZ := make([]byte, fileInfo.Size())
+
+	for i := 0; i < len(bufferX); i++ {
+		bufferZ[i] = bufferX[i] ^ bufferY[i]
+	}
+
+	for i := 0; i < len(bufferX); i++ {
+		bufferZ[i] = bufferZ[i] ^ bufferY[i]
+	}
+
+
+	fileout, fileErr := os.Create("1" + filenameTestData)
+	if fileErr != nil {
+		log.Fatal(fileErr)
+		return
+	}
+
+	defer func() {
+		if err := fileout.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	_ = ioutil.WriteFile("1" + filenameTestData, bufferZ, 0644)
 }

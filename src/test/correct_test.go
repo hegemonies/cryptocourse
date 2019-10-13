@@ -7,6 +7,7 @@ import (
 	"cryptocrouse/src/go/FastExp"
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
+	"cryptocrouse/src/go/VernamCipher"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -280,5 +281,49 @@ func TestElGamalCodeOnFile(t *testing.T) {
 		producer := cryptosystem.Users[producerName]
 		consumer := cryptosystem.Users[consumerName]
 		t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+	}
+}
+
+func TestVernamCipherSimpleData(t *testing.T) {
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := VernamCipher.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	data := []byte{2, 3, 4, 5, 6, 7, 8, 9}
+
+	cryptosystem.SendMessage(producerName, consumerName, data)
+
+	//cryptosystem.PrintUsers()
+
+	if cryptosystem.CheckMessage(producerName, consumerName) == false {
+		producer := cryptosystem.Users[producerName]
+		consumer := cryptosystem.Users[consumerName]
+		t.Errorf("Expected %v, got %v", producer.GetOriginMessage(), consumer.GetOriginMessage())
+	}
+}
+
+func TestVernamCipherDataFromFile(t *testing.T) {
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := VernamCipher.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	filenameTestData := "test_data.png"
+
+	cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
+
+	//cryptosystem.PrintUsers()
+
+	if cryptosystem.CheckMessage(producerName, consumerName) == false {
+		producer := cryptosystem.Users[producerName]
+		consumer := cryptosystem.Users[consumerName]
+		t.Errorf("Expected %v, got %v", producer.GetOriginMessage(), consumer.GetOriginMessage())
 	}
 }
