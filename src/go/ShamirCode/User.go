@@ -18,11 +18,11 @@ type User struct {
 
 func (user *User) generateP() {
 	for {
-		q := Diffie_Hellman.GeneratePrimeNumber()
+		q := Diffie_Hellman.GeneratePrimeNumberWithBounds(MaxBound)
 		user.P = 2 * q + 1
 
 		if Diffie_Hellman.IsPrime(user.P) {
-			if user.P > MaxBound && user.P < MaxBound * 2 {
+			if user.P >= MinBound && user.P <= MaxBound {
 				break
 			}
 		}

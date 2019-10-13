@@ -1,5 +1,6 @@
 package ShamirCode
 
 const (
-	MaxBound = 1000000000
+	MinBound = 268435456
+	MaxBound = 2147483648
 )

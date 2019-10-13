@@ -217,6 +217,28 @@ func TestShamirCodeSimple(t *testing.T) {
 	}
 }
 
+func TestShamirCodeFile(t *testing.T) {
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := ShamirCode.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	filename_test_data := "test_data.png"
+
+	cryptosystem.SendMessageFromFile(producerName, consumerName, filename_test_data)
+
+	cryptosystem.PrintUsers()
+
+	if cryptosystem.CheckMessage(producerName, consumerName) == false {
+		producer := cryptosystem.Users[producerName]
+		consumer := cryptosystem.Users[consumerName]
+		t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+	}
+}
+
 func TestElGamalCode(t *testing.T) {
 	producerName := "Alice"
 	consumerName := "Bob"

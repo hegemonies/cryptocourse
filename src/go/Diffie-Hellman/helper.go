@@ -51,3 +51,27 @@ func GeneratePrimeNumber() (result uint64) {
 	}
 	return
 }
+
+func GeneratePrimeNumberWithoutBounds() (result uint64) {
+	result = rand.Uint64()
+	for !IsPrime(result) {
+		result = rand.Uint64()
+		if result < 2 {
+			continue
+		}
+	}
+	return
+}
+
+func GeneratePrimeNumberWithBounds(bound uint64) (result uint64) {
+	for {
+		result = rand.Uint64() % bound
+		if result < 2 {
+			continue
+		}
+		if !IsPrime(result) {
+			break
+		}
+	}
+	return
+}

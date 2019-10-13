@@ -62,7 +62,7 @@ func (system *CryptoSystem) SendMessageFromFile(producerName, consumerName, file
 	producerInSystem.GeneratePrivateVariables()
 	consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
 
-	producerInSystem.SetMessage(FileWrapper.GetMessageFromFileByP(filename, uint64(producerInSystem.P)))
+	producerInSystem.SetMessage(FileWrapper.GetMessageFromFile(filename))
 
 	X1 := producerInSystem.ComputeX1()
 	X2 := consumerInSystem.ComputeX2(X1)
