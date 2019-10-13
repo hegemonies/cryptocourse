@@ -195,32 +195,14 @@ func TestShanksAlgo3RandMap(t *testing.T) {
 	}
 }
 
-func TestShamirCode(t *testing.T) {
+func TestShamirCodeSimple(t *testing.T) {
 	producerName := "Alice"
 	consumerName := "Bob"
 
 	cryptosystem := ShamirCode.CryptoSystem{}
 	cryptosystem.Init()
-	//_ = cryptosystem.AddUser(producerName)
-	//_ = cryptosystem.AddUser(consumerName)
-	//
-	//producerInSystem := cryptosystem.Users[producerName]
-	//producerInSystem.SetC(5)
-	//producerInSystem.SetD(9)
-	//producerInSystem.P = 23
-	//
-	//consumerInSystem := cryptosystem.Users[consumerName]
-	//consumerInSystem.SetC(7)
-	//consumerInSystem.SetD(19)
-	//consumerInSystem.P = 23
-
-	//cryptosystem.Users[producerName] = producerInSystem
-	//cryptosystem.Users[consumerName] = consumerInSystem
-	//cryptosystem.UpdateUser(producerName, producerInSystem)
-	//cryptosystem.UpdateUser(consumerName, consumerInSystem)
-
-	_ = cryptosystem.AddUserWithParams(producerName, 5, 9, 23)
-	_ = cryptosystem.AddUserWithParams(consumerName, 7, 19, 23)
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
 
 	data := []uint64{2, 3, 4, 5, 6, 7, 8, 9}
 
@@ -235,7 +217,7 @@ func TestShamirCode(t *testing.T) {
 	}
 }
 
-func TestEl_GamalCode(t *testing.T) {
+func TestElGamalCode(t *testing.T) {
 	producerName := "Alice"
 	consumerName := "Bob"
 

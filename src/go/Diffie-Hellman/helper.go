@@ -43,8 +43,9 @@ func IsPrimeGoogle(x uint64) bool {
 
 func GeneratePrimeNumber() (result uint64) {
 	result = rand.Uint64() % MaxBound
-	for ; !IsPrime(result); result = rand.Uint64() % MaxBound {
-		if result == 1 {
+	for !IsPrime(result) {
+		result = rand.Uint64() % MaxBound
+		if result < 2 {
 			continue
 		}
 	}

@@ -1,5 +1,10 @@
 package main
 
+import (
+	Diffie_Hellman "cryptocrouse/src/go/Diffie-Hellman"
+	"fmt"
+)
+
 func main() {
 	//fmt.Println("fast exp naive =", FastExp.NaivePowWithMod(159, 894, 513))
 	//fmt.Println("fast exp my    =", FastExp.FastExp(159, 894, 513))
@@ -32,5 +37,19 @@ func main() {
 	//var p uint64 = 23
 	//FileWrapper.WriteToFile("1" + filename, FileWrapper.GetMessageFromFileByP(filename, p), p)
 
+	//var p uint64 = 1007849279
+	//fmt.Println(p)
+	//fmt.Println(int64(p) - 1)
+	//fmt.Println((107042119 * 859590983) % 1661422823)
+	//fmt.Println((107042119 * 859590983) % 1661422823 - 1)
+	//fmt.Println((107042119 * 859590983) % (1661422823 - 1))
+
+	var c, d, p uint64
+
+	c, d, p = 759828549, 963602659, 1954085507
+
+	fmt.Println(Diffie_Hellman.IsPrime(1791745079))
+
+	fmt.Println((c * d) % (p - 1))
 
 }

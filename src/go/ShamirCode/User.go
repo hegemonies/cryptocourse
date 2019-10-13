@@ -10,26 +10,21 @@ import (
 
 type User struct {
 	Name       string
-	P          int64
-	c          int64
-	d          int64
+	P          uint64
+	c          uint64
+	d          uint64
 	m          []uint64
 }
 
 func (user *User) generateP() {
-	q := int64(Diffie_Hellman.GeneratePrimeNumber())
-	user.P = 2 * q + 1
-
-	if q < 0 || user.P < 0 {
-		user.generateP()
-	}
-
-	for !Diffie_Hellman.IsPrime(uint64(user.P)) {
-		q = int64(Diffie_Hellman.GeneratePrimeNumber())
+	for {
+		q := Diffie_Hellman.GeneratePrimeNumber()
 		user.P = 2 * q + 1
 
-		if q < 0 || user.P < 0 {
-			user.generateP()
+		if Diffie_Hellman.IsPrime(user.P) {
+			if user.P > MaxBound && user.P < MaxBound * 2 {
+				break
+			}
 		}
 	}
 }
@@ -37,43 +32,45 @@ func (user *User) generateP() {
 func (user *User) generateC() {
 	var GCD int64 = 0
 	for ; GCD != 1; {
-		user.c = rand.Int63n(MaxBound)
+		user.c = rand.Uint64() % MaxBound
 		if user.c < 2 {
 			continue
 		}
-		GCD, _, _ = EuclideanAlgorithm.GCD(user.c, user.P - 1)
+		GCD, _, _ = EuclideanAlgorithm.GCD(int64(user.P - 1), int64(user.c))
 	}
 }
 
 func (user *User) generateD() {
-	_, _, y := EuclideanAlgorithm.GCD(user.P, user.c)
+	_, _, y := EuclideanAlgorithm.GCD(int64(user.P - 1), int64(user.c))
 	if y < 0 {
-		user.d = user.P + y
+		user.d = uint64(int64(user.P) + y)
 	} else {
-		user.d = y
+		user.d = uint64(y)
 	}
 }
 
 func (user *User) GeneratePrivateVariables() {
-	user.generateP()
-	user.generateC()
-	user.generateD()
-
-	for user.d % MaxBound != user.d {
+	for {
 		user.generateP()
 		user.generateC()
 		user.generateD()
+
+		if user.d <= MaxBound && ((user.c * user.d) % (user.P - 1)) == 1 {
+			break
+		}
 	}
 }
 
-func (user *User) GeneratePrivateVariablesWithP(p int64) {
+func (user *User) GeneratePrivateVariablesWithP(p uint64) {
 	user.P = p
-	user.generateC()
-	user.generateD()
 
-	for user.d % MaxBound != user.d {
+	for {
 		user.generateC()
 		user.generateD()
+
+		if user.d <= MaxBound && ((user.c * user.d) % (user.P - 1)) == 1 {
+			break
+		}
 	}
 }
 
@@ -126,10 +123,10 @@ func (user *User) GetMessage() []uint64 {
 	return user.m
 }
 
-func (user *User) SetC(c int64) {
+func (user *User) SetC(c uint64) {
 	user.c = c
 }
 
-func (user *User) SetD(d int64) {
+func (user *User) SetD(d uint64) {
 	user.d = d
 }

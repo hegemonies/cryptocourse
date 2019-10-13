@@ -27,7 +27,7 @@ func (system *CryptoSystem) AddUser(name string) (err error) {
 	return nil
 }
 
-func (system *CryptoSystem) AddUserWithParams(name string, c, d, p int64) (err error) {
+func (system *CryptoSystem) AddUserWithParams(name string, c, d, p uint64) (err error) {
 	user := User{}
 	user.Name = name
 	user.P = p
@@ -85,8 +85,8 @@ func (system *CryptoSystem) SendMessage(producerName, consumerName string, data 
 		return // todo: too
 	}
 
-	//producerInSystem.GeneratePrivateVariables()
-	//consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
+	producerInSystem.GeneratePrivateVariables()
+	consumerInSystem.GeneratePrivateVariablesWithP(producerInSystem.P)
 
 	producerInSystem.SetMessage(data)
 
