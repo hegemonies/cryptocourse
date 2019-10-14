@@ -275,7 +275,7 @@ func TestElGamalCodeOnFile(t *testing.T) {
 
 	cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
 
-	cryptosystem.PrintUsers()
+	//cryptosystem.PrintUsers()
 
 	if cryptosystem.CheckMessage(producerName, consumerName) == false {
 		producer := cryptosystem.Users[producerName]
