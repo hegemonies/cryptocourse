@@ -5,9 +5,11 @@ import (
 	elgamalcode "cryptocrouse/src/go/ElGamalCode"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
 	"cryptocrouse/src/go/FastExp"
+	"cryptocrouse/src/go/RSA"
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
 	"cryptocrouse/src/go/VernamCipher"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -326,4 +328,64 @@ func TestVernamCipherDataFromFile(t *testing.T) {
 		consumer := cryptosystem.Users[consumerName]
 		t.Errorf("Expected %v, got %v", producer.GetOriginMessage(), consumer.GetOriginMessage())
 	}
+}
+
+func TestRSASimpleData(t *testing.T) {
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := RSA.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	//data := []uint64{2, 3, 4, 5, 6, 7, 8, 9}
+
+	countErrors := 0
+	for i := 0; i < 100000; i++ {
+		data := make([]uint64, 10)
+		for j := 0; j < 10; j++ {
+			data = append(data, rand.Uint64())
+		}
+		cryptosystem.SendMessage(producerName, consumerName, data)
+
+		//cryptosystem.PrintUsers()
+
+		if cryptosystem.CheckMessage(producerName, consumerName) == false {
+			countErrors++
+			//producer := cryptosystem.Users[producerName]
+			//consumer := cryptosystem.Users[consumerName]
+			//t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+		}
+	}
+
+	fmt.Printf("count errors: %d\n", countErrors)
+}
+
+func TestRSADataFromFile(t *testing.T) {
+	producerName := "Alice"
+	consumerName := "Bob"
+
+	cryptosystem := RSA.CryptoSystem{}
+	cryptosystem.Init()
+	_ = cryptosystem.AddUser(producerName)
+	_ = cryptosystem.AddUser(consumerName)
+
+	filenameTestData := "test_data.png"
+
+	countErrors := 0
+	for i := 0; i < 100000; i++ {
+		cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
+
+		//cryptosystem.PrintUsers()
+
+		if cryptosystem.CheckMessage(producerName, consumerName) == false {
+			countErrors++
+			//producer := cryptosystem.Users[producerName]
+			//consumer := cryptosystem.Users[consumerName]
+			//t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+		}
+	}
+
+	fmt.Printf("count errors: %d\n", countErrors)
 }
