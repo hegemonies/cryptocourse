@@ -342,12 +342,12 @@ func TestRSASimpleData(t *testing.T) {
 
 	cryptosystem.SendMessage(producerName, consumerName, data)
 
-	//cryptosystem.PrintUsers()
+	cryptosystem.PrintUsers()
 
 	if cryptosystem.CheckMessage(producerName, consumerName) == false {
 		producer := cryptosystem.Users[producerName]
 		consumer := cryptosystem.Users[consumerName]
-		t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+		t.Errorf("Expected %v, got %v", producer.GetOrigMessage(), consumer.GetOrigMessage())
 	}
 }
 
@@ -369,6 +369,6 @@ func TestRSADataFromFile(t *testing.T) {
 	if cryptosystem.CheckMessage(producerName, consumerName) == false {
 		producer := cryptosystem.Users[producerName]
 		consumer := cryptosystem.Users[consumerName]
-		t.Errorf("Expected %v, got %v", producer.GetMessage(), consumer.GetMessage())
+		t.Errorf("Expected %v, got %v", producer.GetOrigMessage(), consumer.GetOrigMessage())
 	}
 }

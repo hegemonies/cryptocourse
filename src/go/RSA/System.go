@@ -28,9 +28,9 @@ func (system *CryptoSystem) AddUser(name string) (err error) {
 }
 
 func (system *CryptoSystem) PrintUsers() {
-	fmt.Printf("%12s%15s%20s%20s%20s%20s%20s%20s\n", "Name", "C", "D", "P", "Q", "N", "Phi", "Message")
+	fmt.Printf("%12s%15s%20s%20s%20s%20s%20s\n", "Name", "C", "D", "P", "Q", "N", "Phi")
 	for _, user := range system.Users {
-		user.PrintUserInfo("%12s%15d%20d%20d%20d%20d%20d%v\n")
+		user.PrintUserInfo("%12s%15d%20d%20d%20d%20d%20d %v\n")
 	}
 }
 
@@ -46,10 +46,14 @@ func (system *CryptoSystem) SendMessageFromFile(producerName, consumerName, file
 	}
 
 	consumerInSystem.GeneratePrivateVariables()
-	producerInSystem.SetMessage(FileWrapper.GetMessageFromFile(filename))
+
+	producerInSystem.SetOrigMessage(FileWrapper.GetMessageFromFile(filename))
 	producerInSystem.EncryptMessage(consumerInSystem.D, consumerInSystem.N)
+	FileWrapper.WriteToFile("encrypt-" + filename, producerInSystem.GetEncryptMessage())
+
 	consumerInSystem.m = producerInSystem.m
 	consumerInSystem.DecryptMessage()
+	FileWrapper.WriteToFile("decrypt-" + filename, consumerInSystem.GetOrigMessage())
 
 	system.Users[producerName] = producerInSystem
 	system.Users[consumerName] = consumerInSystem
@@ -67,7 +71,7 @@ func (system *CryptoSystem) SendMessage(producerName, consumerName string, data 
 	}
 
 	consumerInSystem.GeneratePrivateVariables()
-	producerInSystem.SetMessage(data)
+	producerInSystem.SetOrigMessage(data)
 	producerInSystem.EncryptMessage(consumerInSystem.D, consumerInSystem.N)
 	consumerInSystem.m = producerInSystem.m
 	consumerInSystem.DecryptMessage()
@@ -87,13 +91,12 @@ func (system *CryptoSystem) CheckMessage(producerName, consumerName string) (che
 		return false // todo: too
 	}
 
-	if len(producerInSystem.m) != len(consumerInSystem.m) {
+	if len(producerInSystem.origM) != len(consumerInSystem.origM) {
 		return false
 	}
 
-	//for i := 0; i < len(producerInSystem.m); i++ {
 	for i := range producerInSystem.m {
-		if producerInSystem.m[i] != consumerInSystem.m[i] {
+		if producerInSystem.origM[i] != consumerInSystem.origM[i] {
 			return false
 		}
 	}

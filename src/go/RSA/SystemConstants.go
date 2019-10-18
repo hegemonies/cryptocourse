@@ -1,6 +1,6 @@
 package RSA
 
 const (
-	MinBound = 10000
-	MaxBound = 200000
+	MinBound = 3
+	MaxBound = 100000
 )

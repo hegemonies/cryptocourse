@@ -16,6 +16,7 @@ type User struct {
 	q          uint64
 	N          uint64
 	phi        uint64
+	origM      []uint64
 	m          []uint64
 }
 
@@ -84,25 +85,35 @@ func (user *User) GeneratePrivateVariables() {
 }
 
 func (user *User) PrintUserInfo(format string) {
-	fmt.Printf(format, user.Name, user.c, user.D, user.p, user.q, user.N, user.phi, user.m)
+	fmt.Printf(format, user.Name, user.c, user.D, user.p, user.q, user.N, user.phi, user.origM)
 }
 
 func (user *User) EncryptMessage(d, n uint64) {
+	user.m = make([]uint64, len(user.origM))
 	for i := 0; i < len(user.m); i++ {
-		user.m[i] = FastExp.SmallFastExp(user.m[i], d, n)
+		user.m[i] = FastExp.SmallFastExp(user.origM[i], d, n)
 	}
 }
 
 func (user *User) DecryptMessage() {
+	user.origM = make([]uint64, len(user.m))
 	for i := 0; i < len(user.m); i++ {
-		user.m[i] = FastExp.SmallFastExp(user.m[i], user.c, user.N)
+		user.origM[i] = FastExp.SmallFastExp(user.m[i], user.c, user.N)
 	}
 }
 
-func (user *User) GetMessage() []uint64 {
+func (user *User) GetOrigMessage() []uint64 {
+	return user.origM
+}
+
+func (user *User) SetOrigMessage(m []uint64) {
+	user.origM = m
+}
+
+func (user *User) GetEncryptMessage() []uint64 {
 	return user.m
 }
 
-func (user *User) SetMessage(m []uint64) {
+func (user *User) SetEncryptMessage(m []uint64) {
 	user.m = m
 }
