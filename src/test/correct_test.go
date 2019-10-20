@@ -210,7 +210,7 @@ func TestShamirCodeSimple(t *testing.T) {
 
 	cryptosystem.SendMessage(producerName, consumerName, data)
 
-	cryptosystem.PrintUsers()
+	//cryptosystem.PrintUsers()
 
 	if cryptosystem.CheckMessage(producerName, consumerName) == false {
 		producer := cryptosystem.Users[producerName]
@@ -342,7 +342,7 @@ func TestRSASimpleData(t *testing.T) {
 
 	cryptosystem.SendMessage(producerName, consumerName, data)
 
-	cryptosystem.PrintUsers()
+	//cryptosystem.PrintUsers()
 
 	if cryptosystem.CheckMessage(producerName, consumerName) == false {
 		producer := cryptosystem.Users[producerName]
@@ -364,7 +364,7 @@ func TestRSADataFromFile(t *testing.T) {
 
 	cryptosystem.SendMessageFromFile(producerName, consumerName, filenameTestData)
 
-	cryptosystem.PrintUsers()
+	//cryptosystem.PrintUsers()
 
 	if cryptosystem.CheckMessage(producerName, consumerName) == false {
 		//producer := cryptosystem.Users[producerName]

@@ -1,9 +1,9 @@
 package RSA
 
 const (
-	MaxQ = 500000
+	MaxQ = 50000
 	MinP = 257
-	MaxP = 1000000
+	MaxP = 100000
 	MinBound = 268435456
-	MaxBound = 2147483648
+	MaxBound = 268435456
 )
