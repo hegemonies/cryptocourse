@@ -20,7 +20,7 @@ func IsPrime(x uint64) bool {
 
 func IsPrimeGoogle(x uint64) bool {
 	if x <= 1 {
-		return false;
+		return false
 	}
 
 	if x % 2 == 0 {
@@ -69,7 +69,7 @@ func GeneratePrimeNumberWithBounds(bound uint64) (result uint64) {
 		if result < 2 {
 			continue
 		}
-		if !IsPrime(result) {
+		if IsPrimeGoogle(result) {
 			break
 		}
 	}

@@ -22,11 +22,11 @@ type User struct {
 
 func (user *User) generateP() {
 	for {
-		q := diffiehellman.GeneratePrimeNumberWithBounds(MaxBound)
-		user.p = 2 * q + 1
+		user.generateQ()
+		user.p = 2 * user.q + 1
 
-		if diffiehellman.IsPrime(user.p) {
-			if user.p >= MinBound && user.p <= MaxBound {
+		if diffiehellman.IsPrimeGoogle(user.p) && diffiehellman.IsPrimeGoogle(user.q) {
+			if user.p >= MinP && user.p <= MaxP {
 				break
 			}
 		}
@@ -34,7 +34,7 @@ func (user *User) generateP() {
 }
 
 func (user *User) generateQ() {
-	user.q = diffiehellman.GeneratePrimeNumberWithBounds(MaxBound)
+	user.q = diffiehellman.GeneratePrimeNumberWithBounds(MaxQ)
 }
 
 func (user *User) generatePhi() {
@@ -46,7 +46,7 @@ func (user *User) generateN() {
 }
 
 func (user *User) generateC() {
-	_, _, y := EuclideanAlgorithm.GCD(int64(user.phi), int64(user.D))
+	_, _, y := EuclideanAlgorithm.GCD(int64(user.D), int64(user.phi))
 	if y < 0 {
 		user.c = uint64(int64(user.p) + y)
 	} else {
@@ -58,7 +58,7 @@ func (user *User) generateD() {
 	for {
 		user.D = rand.Uint64() % MaxBound
 
-		if user.D < 2 || user.D >= user.phi {
+		if user.D >= user.phi {
 			continue
 		}
 
@@ -72,20 +72,20 @@ func (user *User) generateD() {
 func (user *User) GeneratePrivateVariables() {
 	for {
 		user.generateP()
-		user.generateQ()
+		//user.generateQ()
 		user.generateN()
 		user.generatePhi()
 		user.generateD()
 		user.generateC()
 
-		if user.D <= MaxBound && ((user.c * user.D) % (user.phi)) == 1 {
+		if ((user.c * user.D) % (user.phi)) == 1 {
 			break
 		}
 	}
 }
 
 func (user *User) PrintUserInfo(format string) {
-	fmt.Printf(format, user.Name, user.c, user.D, user.p, user.q, user.N, user.phi, user.origM)
+	fmt.Printf(format, user.Name, user.c, user.D, user.p, user.q, user.N, user.phi)
 }
 
 func (user *User) EncryptMessage(d, n uint64) {

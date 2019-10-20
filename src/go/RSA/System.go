@@ -30,7 +30,7 @@ func (system *CryptoSystem) AddUser(name string) (err error) {
 func (system *CryptoSystem) PrintUsers() {
 	fmt.Printf("%12s%15s%20s%20s%20s%20s%20s\n", "Name", "C", "D", "P", "Q", "N", "Phi")
 	for _, user := range system.Users {
-		user.PrintUserInfo("%12s%15d%20d%20d%20d%20d%20d %v\n")
+		user.PrintUserInfo("%12s%15d%20d%20d%20d%20d%20d\n")
 	}
 }
 
