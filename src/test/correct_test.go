@@ -376,6 +376,8 @@ func TestRSADataFromFile(t *testing.T) {
 }
 
 func TestSignatureRSA(t *testing.T) {
+	//rand.Seed(time.Now().Unix())
+
 	userName := "Alice"
 	user := Fingerprints.User{}
 	user.Name = userName
@@ -386,6 +388,10 @@ func TestSignatureRSA(t *testing.T) {
 	user.ComputeHash(filename)
 	user.ComputeSignature()
 	user.WriteHahSumToFile(filename + ".sig")
+
+	user.PrintUserInfo("name = %s\nc =   %d\nd =   %d\np =   %d\nq =   %d\nn =   %d\nphi =  %d\ny = %v\ns = %v\nhash = %v\n")
+
+	user.PrintOpenKeysInFile("open-keys-sig-rsa.txt")
 
 	wait := true
 	in := user.CheckSignature()

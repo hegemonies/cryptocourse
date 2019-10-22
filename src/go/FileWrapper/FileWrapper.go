@@ -145,7 +145,7 @@ func WriteToFileByP(filename string, message []uint64, p uint64) {
 	}
 
 	for i := 0; i < len(message); i++ {
-		chunk := convertFromUint64ToByte(message[i], countBytes)
+		chunk := ConvertFromUint64ToByte(message[i], countBytes)
 		err := binary.Write(buf, binary.LittleEndian, chunk)
 		if err != nil {
 			log.Fatal(err)
@@ -155,6 +155,25 @@ func WriteToFileByP(filename string, message []uint64, p uint64) {
 	err1 := ioutil.WriteFile(filename, buf.Bytes(), 0644)
 	if err1 != nil {
 		log.Fatal(err1)
+	}
+}
+
+func WriteByteArrayToFile(filename string, array []byte) {
+	file, fileErr := os.Create(filename)
+	if fileErr != nil {
+		log.Fatal(fileErr)
+		return
+	}
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	_, err := file.Write(array)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -176,7 +195,7 @@ func WriteToFile(filename string, message []uint64) {
 	countBytes := 1
 
 	for i := 0; i < len(message); i++ {
-		chunk := convertFromUint64ToByte(message[i], countBytes)
+		chunk := ConvertFromUint64ToByte(message[i], countBytes)
 		err := binary.Write(buf, binary.LittleEndian, chunk)
 		if err != nil {
 			log.Fatal(err)
@@ -189,7 +208,7 @@ func WriteToFile(filename string, message []uint64) {
 	}
 }
 
-func convertFromUint64ToByte(from uint64, countBytes int) (to []byte) {
+func ConvertFromUint64ToByte(from uint64, countBytes int) (to []byte) {
 	buf := make([]byte, 8)
 	binary.LittleEndian.PutUint64(buf, from)
 	to = make([]byte, countBytes)

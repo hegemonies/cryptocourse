@@ -1,6 +1,7 @@
 package Fingerprints
 
 import (
+	"bufio"
 	"crypto/md5"
 	diffiehellman "cryptocrouse/src/go/Diffie-Hellman"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
@@ -11,6 +12,7 @@ import (
 	"hash"
 	"io"
 	"log"
+	"math/big"
 	"math/rand"
 	"os"
 )
@@ -25,7 +27,7 @@ type User struct {
 	phi        uint64
 	hash       hash.Hash
 	y          []byte
-	s          []uint64
+	s          []byte
 }
 
 const (
@@ -85,10 +87,11 @@ func (user *User) generateD() {
 }
 
 func (user *User) GeneratePrivateVariables() {
+	user.generateP()
+	user.generateN()
+	user.generatePhi()
+
 	for {
-		user.generateP()
-		user.generateN()
-		user.generatePhi()
 		user.generateD()
 		user.generateC()
 
@@ -99,11 +102,11 @@ func (user *User) GeneratePrivateVariables() {
 }
 
 func (user *User) PrintUserInfo(format string) {
-	fmt.Printf(format, user.Name, user.c, user.D, user.p, user.q, user.N, user.phi)
+	fmt.Printf(format, user.Name, user.c, user.D, user.p, user.q, user.N, user.phi, user.y, user.s, user.hash)
 }
 
 func (user *User) PrintOpenKeysInFile(filename string) {
-	file, err := os.Open(filename)
+	file, err := os.Create(filename)
 	if err != nil {
 		_ = fmt.Errorf("%v\n", err)
 	}
@@ -119,39 +122,39 @@ func (user *User) ComputeHash(filename string) {
 	}
 	defer file.Close()
 
+	reader := bufio.NewReader(file)
+
 	user.hash = md5.New()
 
-	if _, err := io.Copy(user.hash, file); err != nil {
+	if _, err := io.Copy(user.hash, reader); err != nil {
 		log.Fatal(err)
 	}
 
 	//fileBytes := FileWrapper.GetMessageFromFileInBytes(filename)
 
-	user.hash.Sum(nil)
-	user.convertHashToBytes()
-}
-
-func (user *User) convertHashToBytes() {
-	user.y = make([]byte, user.hash.Size())
-	user.hash.Write(user.y)
+	user.y = user.hash.Sum(nil)
 }
 
 func (user *User) ComputeSignature() {
-	user.s = make([]uint64, len(user.y))
+	user.s = make([]byte, 0, len(user.y))
 	for i := 0; i < len(user.y); i++ {
-		user.s[i] = FastExp.SmallFastExp(uint64(user.y[i]), user.c, user.N)
+		//buf := FileWrapper.ConvertFromUint64ToByte(FastExp.SmallFastExp(uint64(user.y[i]), user.c, user.N), 1)[0]
+		buf := big.NewInt(0).Exp(big.NewInt(int64(user.y[i])), big.NewInt(int64(user.c)), big.NewInt(int64(user.N)))
+		user.s = append(user.s, buf.Bytes()[0])
 	}
 }
 
 func (user *User) WriteHahSumToFile(filename string) {
-	FileWrapper.WriteToFile(filename, user.s)
+	FileWrapper.WriteByteArrayToFile(filename, user.s)
 }
 
 func (user *User) CheckSignature() bool {
 	for i := 0; i < len(user.s); i++ {
-		w := FastExp.SmallFastExp(user.s[i], user.D, user.N)
+		w := FastExp.SmallFastExp(uint64(user.s[i]), user.D, user.N)
+		//w := big.NewInt(0).Exp(big.NewInt(int64(user.s[i])), big.NewInt(int64(user.D)), big.NewInt(int64(user.N)))
 
-		if w != user.s[i] {
+		//if w.Bytes()[0] != user.y[i] {
+		if byte(w) == user.y[i] {
 			log.Println("Invalid Signature")
 			return false
 		}
