@@ -5,6 +5,7 @@ import (
 	elgamalcode "cryptocrouse/src/go/ElGamalCode"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
 	"cryptocrouse/src/go/FastExp"
+	"cryptocrouse/src/go/Fingerprints"
 	"cryptocrouse/src/go/RSA"
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
@@ -371,5 +372,25 @@ func TestRSADataFromFile(t *testing.T) {
 		//consumer := cryptosystem.Users[consumerName]
 		//t.Errorf("Expected %v, got %v", producer.GetOrigMessage(), consumer.GetOrigMessage())
 		t.Error("Error")
+	}
+}
+
+func TestSignatureRSA(t *testing.T) {
+	userName := "Alice"
+	user := Fingerprints.User{}
+	user.Name = userName
+	user.GeneratePrivateVariables()
+
+	filename := "test_data.png"
+
+	user.ComputeHash(filename)
+	user.ComputeSignature()
+	user.WriteHahSumToFile(filename + ".sig")
+
+	wait := true
+	in := user.CheckSignature()
+
+	if wait != in {
+		t.Errorf("Expected %v, got %v", wait, in)
 	}
 }
