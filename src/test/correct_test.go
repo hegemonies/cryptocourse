@@ -400,3 +400,28 @@ func TestSignatureRSA(t *testing.T) {
 		t.Errorf("Expected %v, got %v", wait, in)
 	}
 }
+
+func TestSignatureElGamal(t *testing.T) {
+	//rand.Seed(1)
+	t.SkipNow()
+	rand.Seed(time.Now().Unix())
+	filename := "test_data.png"
+
+	userA := Fingerprints.ElGamalUser{}
+	userA.GeneratePrivateNumbers()
+	userA.ComputeHash(filename)
+	userA.CheckHash()
+	userA.ComputeSignature()
+
+	userB := Fingerprints.ElGamalUser{}
+
+	in := userB.CheckMessage(filename, &userA.Y, &userA.R, &userA.S, &userA.G, &userA.P)
+	wait := true
+
+	userA.PrintInfo()
+	//userB.PrintInfo()
+
+	if wait != in {
+		t.Errorf("Expected %v, got %v", wait, in)
+	}
+}

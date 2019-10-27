@@ -138,7 +138,6 @@ func (user *User) ComputeHash(filename string) {
 func (user *User) ComputeSignature() {
 	user.s = make([]byte, 0, len(user.y))
 	for i := 0; i < len(user.y); i++ {
-		//buf := FileWrapper.ConvertFromUint64ToByte(FastExp.SmallFastExp(uint64(user.y[i]), user.c, user.N), 1)[0]
 		buf := big.NewInt(0).Exp(big.NewInt(int64(user.y[i])), big.NewInt(int64(user.c)), big.NewInt(int64(user.N)))
 		user.s = append(user.s, buf.Bytes()[0])
 	}
@@ -151,9 +150,6 @@ func (user *User) WriteHahSumToFile(filename string) {
 func (user *User) CheckSignature() bool {
 	for i := 0; i < len(user.s); i++ {
 		w := FastExp.SmallFastExp(uint64(user.s[i]), user.D, user.N)
-		//w := big.NewInt(0).Exp(big.NewInt(int64(user.s[i])), big.NewInt(int64(user.D)), big.NewInt(int64(user.N)))
-
-		//if w.Bytes()[0] != user.y[i] {
 		if byte(w) == user.y[i] {
 			log.Println("Invalid Signature")
 			return false
