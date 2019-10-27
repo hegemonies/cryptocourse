@@ -23,7 +23,7 @@ const (
 )
 
 func TestFastExpCorrectStable(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	var x, y, m int64 = 13, 17, 15
 
@@ -36,7 +36,7 @@ func TestFastExpCorrectStable(t *testing.T) {
 }
 
 func TestFastExpCorrectRand(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	rand.Seed(time.Now().Unix())
 
@@ -53,7 +53,7 @@ func TestFastExpCorrectRand(t *testing.T) {
 }
 
 func TestSmallFastExpCorrectRand(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	rand.Seed(time.Now().Unix())
 
@@ -70,7 +70,7 @@ func TestSmallFastExpCorrectRand(t *testing.T) {
 }
 
 func TestEuclideanAlgoRandStable(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	rand.Seed(time.Now().Unix())
 
@@ -93,7 +93,7 @@ func TestEuclideanAlgoRandStable(t *testing.T) {
 }
 
 func TestPrimeFunc(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	var testingNumber uint64 = 2
 	for ; testingNumber < MaxCountTest; testingNumber++ {
@@ -107,7 +107,7 @@ func TestPrimeFunc(t *testing.T) {
 }
 
 func TestConnectionUser(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	cryptoSystem := DF.CryptoSystem{}
 	alice := "Alice"
@@ -128,7 +128,7 @@ func TestConnectionUser(t *testing.T) {
 }
 
 func TestConnectionUserRand(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	rand.Seed(time.Now().Unix())
 
@@ -152,7 +152,7 @@ func TestConnectionUserRand(t *testing.T) {
 }
 
 func TestShanksAlgoStableMap(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 
 	var a, waitX, p uint64 = 5, 16, 23
 	y := FastExp.SmallFastExp(a, waitX, p)
@@ -170,7 +170,7 @@ func TestShanksAlgoStableMap(t *testing.T) {
 func TestShanksAlgo3RandMap(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
-	t.Parallel()
+	//t.Parallel()
 
 	for i := 0; i < MaxCountTest; i++ {
 		a, waitX, p := rand.Uint64() % MaxNumber, rand.Uint64() % MaxNumber, rand.Uint64() % MaxNumber
@@ -376,7 +376,7 @@ func TestRSADataFromFile(t *testing.T) {
 }
 
 func TestSignatureRSA(t *testing.T) {
-	//rand.Seed(time.Now().Unix())
+	rand.Seed(1)
 
 	userName := "Alice"
 	user := Fingerprints.User{}
@@ -387,11 +387,11 @@ func TestSignatureRSA(t *testing.T) {
 
 	user.ComputeHash(filename)
 	user.ComputeSignature()
-	user.WriteHahSumToFile(filename + ".sig")
+	//user.WriteHahSumToFile(filename + ".sig")
 
-	user.PrintUserInfo("name = %s\nc =   %d\nd =   %d\np =   %d\nq =   %d\nn =   %d\nphi =  %d\ny = %v\ns = %v\nhash = %v\n")
+	//user.PrintUserInfo("name = %s\nc =   %d\nd =   %d\np =   %d\nq =   %d\nn =   %d\nphi =  %d\ny = %v\ns = %v\nhash = %v\n")
 
-	user.PrintOpenKeysInFile("open-keys-sig-rsa.txt")
+	//user.PrintOpenKeysInFile("open-keys-sig-rsa.txt")
 
 	wait := true
 	in := user.CheckSignature()
