@@ -402,8 +402,6 @@ func TestSignatureRSA(t *testing.T) {
 }
 
 func TestSignatureElGamal(t *testing.T) {
-	//rand.Seed(1)
-	t.SkipNow()
 	rand.Seed(time.Now().Unix())
 	filename := "test_data.png"
 
@@ -419,7 +417,6 @@ func TestSignatureElGamal(t *testing.T) {
 	wait := true
 
 	userA.PrintInfo()
-	//userB.PrintInfo()
 
 	if wait != in {
 		t.Errorf("Expected %v, got %v", wait, in)

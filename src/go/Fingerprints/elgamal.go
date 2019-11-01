@@ -71,9 +71,9 @@ func (user *ElGamalUser) generateS() {
 }
 
 func Inversion(a, b *big.Int) *big.Int {
-	y := big.NewInt(0)
-	big.NewInt(0).GCD(nil, y, a, b)
-	return y
+	x := big.NewInt(0)
+	big.NewInt(0).GCD(x, nil, a, b)
+	return x
 }
 
 func (user *ElGamalUser) generateU() {
