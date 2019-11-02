@@ -166,12 +166,33 @@ func GenerateBigPrimeNumber() big.Int {
 	}
 }
 
+func GenerateBigPrimeNumberWithLimit(limit *big.Int) *big.Int {
+	for {
+		tmp := GetBigRandomWithLimit(limit)
+		if IsBigPrime(tmp) {
+			return tmp
+		}
+	}
+}
+
 func IsPrime(number big.Int) bool {
+	return number.ProbablyPrime(20)
+}
+
+func IsBigPrime(number *big.Int) bool {
 	return number.ProbablyPrime(20)
 }
 
 func GetBigRandom() *big.Int {
 	n, err := rand.Int(rand.Reader, MaxRandom)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return n
+}
+
+func GetBigRandomWithLimit(limit *big.Int) *big.Int {
+	n, err := rand.Int(rand.Reader, limit)
 	if err != nil {
 		log.Fatal(err)
 	}

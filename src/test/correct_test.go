@@ -427,3 +427,35 @@ func TestSignatureElGamal(t *testing.T) {
 		t.Errorf("Expected %v, got %v", wait, in)
 	}
 }
+
+func TestSignatureGost(t *testing.T) {
+	filename := "test_data.png"
+	keysFilename := "GOST-open-keys-" + filename + ".txt"
+	sigFilename := "GOST-" + filename + ".sig"
+
+	user := Fingerprints.GostUser{}
+
+	user.GenerateKeys()
+	user.PrintOpenKeysToFile(keysFilename)
+
+	user.GenerateSignature(filename)
+	user.PrintSignatureToFile(sigFilename)
+
+	P, Q, A, Y := Fingerprints.GostGetOpenKeysFromFile(keysFilename)
+	R, S := Fingerprints.GostGetSignatureFromFile(sigFilename)
+
+	userTwo := Fingerprints.GostUser{}
+	in := userTwo.CheckSignature(filename,
+		R,
+		S,
+		Q,
+		A,
+		P,
+		Y)
+
+	wait := true
+
+	if wait != in {
+		t.Errorf("Expected %v, got %v", wait, in)
+	}
+}
