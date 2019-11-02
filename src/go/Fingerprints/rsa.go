@@ -15,6 +15,8 @@ import (
 	"math/big"
 	"math/rand"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type User struct {
@@ -115,6 +117,30 @@ func (user *User) PrintOpenKeysInFile(filename string) {
 	_, _ = fmt.Fprintf(file, "N=%d\nD=%d", user.N, user.D)
 }
 
+func RSAGetOpenKeysFromFile(filename string) (N, D uint64) {
+	file, err := os.Open(filename)
+	if err != nil {
+		_ = fmt.Errorf("%v\n", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+
+	var lines []string
+
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if lines != nil {
+		N, _ = strconv.ParseUint(strings.Split(lines[0], "=")[1], 10, 64)
+		D, _ = strconv.ParseUint(strings.Split(lines[1], "=")[1], 10, 64)
+	}
+
+	return
+}
+
 func (user *User) ComputeHash(filename string) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -130,8 +156,6 @@ func (user *User) ComputeHash(filename string) {
 		log.Fatal(err)
 	}
 
-	//fileBytes := FileWrapper.GetMessageFromFileInBytes(filename)
-
 	user.y = user.hash.Sum(nil)
 }
 
@@ -143,13 +167,13 @@ func (user *User) ComputeSignature() {
 	}
 }
 
-func (user *User) WriteHahSumToFile(filename string) {
+func (user *User) WriteHashSumToFile(filename string) {
 	FileWrapper.WriteByteArrayToFile(filename, user.s)
 }
 
-func (user *User) CheckSignature() bool {
+func (user *User) CheckSignature(N, D uint64) bool {
 	for i := 0; i < len(user.s); i++ {
-		w := FastExp.SmallFastExp(uint64(user.s[i]), user.D, user.N)
+		w := FastExp.SmallFastExp(uint64(user.s[i]), D, N)
 		if byte(w) == user.y[i] {
 			log.Println("Invalid Signature")
 			return false

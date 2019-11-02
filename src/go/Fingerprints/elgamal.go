@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/big"
 	"os"
+	"strings"
 )
 
 type ElGamalUser struct {
@@ -99,26 +100,6 @@ func (user *ElGamalUser) generateK() {
 		if GCD.Cmp(big.NewInt(1)) == 0 {
 			break
 		}
-		//if GCD.Cmp(big.NewInt(1)) == 0 {
-		//	inversionK := Inversion(&user.k, PSumOne(&user.P))
-		//	tmp := big.NewInt(0).Mod(
-		//		big.NewInt(0).Mul(
-		//			inversionK,
-		//			&user.k),
-		//		PSumOne(&user.P))
-		//	if tmp.Cmp(big.NewInt(1)) == 0 {
-		//		break
-		//	}
-		//}
-		//inversionK := Inversion(&user.k, PSumOne(&user.P))
-		//tmp := big.NewInt(0).Mod(
-		//	big.NewInt(0).Mul(
-		//		inversionK,
-		//		&user.k),
-		//	PSumOne(&user.P))
-		//if tmp.Cmp(big.NewInt(1)) == 0 {
-		//	break
-		//}
 	}
 }
 
@@ -203,20 +184,13 @@ func BigFastExp(a, x, p big.Int) big.Int {
 
 func (user *ElGamalUser) CheckMessage(filename string, y, r, s, g, p *big.Int) bool {
 	user.ComputeHash(filename)
-	fmt.Printf("hash = %s\n", user.h.Text(10))
 
-	t1 := big.NewInt(0).Exp(y, r, p)
-	fmt.Printf("t1 = %s\n", t1.Text(10))
-	t2 := big.NewInt(0).Exp(r, s, p)
-	fmt.Printf("t2 = %s\n", t2.Text(10))
 	lValue := big.NewInt(0).Mod(
 		big.NewInt(0).Mul(
-			t1,
-			t2),
+			big.NewInt(0).Exp(y, r, p),
+			big.NewInt(0).Exp(r, s, p)),
 		p)
-	fmt.Printf("lvalue = %s\n", lValue.Text(10))
 	rvalue := big.NewInt(0).Exp(g, &user.h, p)
-	fmt.Printf("rvalue = %s\n", rvalue.Text(10))
 
 	if lValue.Cmp(rvalue) != 0 {
 		return false
@@ -246,4 +220,77 @@ func (user *ElGamalUser) PrintInfo() {
 		user.u.Text(10),
 		user.S.Text(10),
 		user.q.Text(10))
+}
+
+func (user *ElGamalUser) PrintOpenKeysToFile(filename string) {
+	file, err := os.Create(filename)
+	if err != nil {
+		_ = fmt.Errorf("%v\n", err)
+	}
+	defer file.Close()
+
+	_, _ = fmt.Fprintf(file,
+		"P=%s\nG=%s\nY=%s",
+		user.P.Text(10),
+		user.G.Text(10),
+		user.Y.Text(10))
+}
+
+func (user *ElGamalUser) PrintSignatureToFile(filename string) {
+	file, err := os.Create(filename)
+	if err != nil {
+		_ = fmt.Errorf("%v\n", err)
+	}
+	defer file.Close()
+
+	_, _ = fmt.Fprintf(file, "R=%s\nS=%s", user.R.Text(10), user.S.Text(10))
+}
+
+func ElGamalGetSignatureFromFile(filename string) (R, S *big.Int) {
+	file, err := os.Open(filename)
+	if err != nil {
+		_ = fmt.Errorf("%v\n", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+
+	var lines []string
+
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if lines != nil {
+		R, _ = big.NewInt(0).SetString(strings.Split(lines[0], "=")[1], 10)
+		S, _ = big.NewInt(0).SetString(strings.Split(lines[1], "=")[1], 10)
+	}
+
+	return
+}
+
+func ElGamalGetOpenKeysFromFile(filename string) (P, G, Y *big.Int) {
+	file, err := os.Open(filename)
+	if err != nil {
+		_ = fmt.Errorf("%v\n", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+
+	var lines []string
+
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if lines != nil {
+		P, _ = big.NewInt(0).SetString(strings.Split(lines[0], "=")[1], 10)
+		G, _ = big.NewInt(0).SetString(strings.Split(lines[1], "=")[1], 10)
+		Y, _ = big.NewInt(0).SetString(strings.Split(lines[2], "=")[1], 10)
+	}
+
+	return
 }

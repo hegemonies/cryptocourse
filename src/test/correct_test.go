@@ -384,17 +384,15 @@ func TestSignatureRSA(t *testing.T) {
 	user.GeneratePrivateVariables()
 
 	filename := "test_data.png"
+	keysFilename := "RSA" + filename + ".keys"
 
 	user.ComputeHash(filename)
 	user.ComputeSignature()
-	//user.WriteHahSumToFile(filename + ".sig")
-
-	//user.PrintUserInfo("name = %s\nc =   %d\nd =   %d\np =   %d\nq =   %d\nn =   %d\nphi =  %d\ny = %v\ns = %v\nhash = %v\n")
-
-	//user.PrintOpenKeysInFile("open-keys-sig-rsa.txt")
+	user.PrintOpenKeysInFile(keysFilename)
+	N, D := Fingerprints.RSAGetOpenKeysFromFile(keysFilename)
 
 	wait := true
-	in := user.CheckSignature()
+	in := user.CheckSignature(N, D)
 
 	if wait != in {
 		t.Errorf("Expected %v, got %v", wait, in)
@@ -404,6 +402,8 @@ func TestSignatureRSA(t *testing.T) {
 func TestSignatureElGamal(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 	filename := "test_data.png"
+	keysFilename := "open-keys-" + filename + ".txt"
+	sigFilename := filename + ".sig"
 
 	userA := Fingerprints.ElGamalUser{}
 	userA.GeneratePrivateNumbers()
@@ -411,12 +411,17 @@ func TestSignatureElGamal(t *testing.T) {
 	userA.CheckHash()
 	userA.ComputeSignature()
 
-	userB := Fingerprints.ElGamalUser{}
+	userA.PrintOpenKeysToFile(keysFilename)
+	userA.PrintSignatureToFile(sigFilename)
 
-	in := userB.CheckMessage(filename, &userA.Y, &userA.R, &userA.S, &userA.G, &userA.P)
+	userB := Fingerprints.ElGamalUser{}
+	P, G, Y := Fingerprints.ElGamalGetOpenKeysFromFile(keysFilename)
+	R, S := Fingerprints.ElGamalGetSignatureFromFile(sigFilename)
+
+	in := userB.CheckMessage(filename, Y, R, S, G, P)
 	wait := true
 
-	userA.PrintInfo()
+	//userA.PrintInfo()
 
 	if wait != in {
 		t.Errorf("Expected %v, got %v", wait, in)
