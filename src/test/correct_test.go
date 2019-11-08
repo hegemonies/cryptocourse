@@ -385,10 +385,12 @@ func TestSignatureRSA(t *testing.T) {
 
 	filename := "test_data.png"
 	keysFilename := "RSA" + filename + ".keys"
+	sigFilename := "RSA" + filename + ".sig"
 
 	user.ComputeHash(filename)
 	user.ComputeSignature()
 	user.PrintOpenKeysInFile(keysFilename)
+	user.WriteHashSumToFile(sigFilename)
 	N, D := Fingerprints.RSAGetOpenKeysFromFile(keysFilename)
 
 	wait := true
@@ -402,8 +404,8 @@ func TestSignatureRSA(t *testing.T) {
 func TestSignatureElGamal(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 	filename := "test_data.png"
-	keysFilename := "open-keys-" + filename + ".txt"
-	sigFilename := filename + ".sig"
+	keysFilename := "ELGamal-open-keys-" + filename + ".txt"
+	sigFilename := "ELGamal-" + filename + ".sig"
 
 	userA := Fingerprints.ElGamalUser{}
 	userA.GeneratePrivateNumbers()

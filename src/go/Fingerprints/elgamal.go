@@ -29,7 +29,7 @@ type ElGamalUser struct {
 
 var (
 	MaxRandom = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(130), nil)
-	MinBound = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(128), nil)
+	MinBound = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(130), nil)
 )
 
 func (user *ElGamalUser) ComputeHash(filename string) {
