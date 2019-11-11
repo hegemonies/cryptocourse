@@ -447,13 +447,7 @@ func TestSignatureGost(t *testing.T) {
 	R, S := Fingerprints.GostGetSignatureFromFile(sigFilename)
 
 	userTwo := Fingerprints.GostUser{}
-	in := userTwo.CheckSignature(filename,
-		R,
-		S,
-		Q,
-		A,
-		P,
-		Y)
+	in := userTwo.CheckSignature(filename, R, S, Q, A, P, Y)
 
 	wait := true
 
