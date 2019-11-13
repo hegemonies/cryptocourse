@@ -166,6 +166,15 @@ func GenerateBigPrimeNumber() big.Int {
 	}
 }
 
+func GenerateBigPrimeNumberRef() *big.Int {
+	for {
+		tmp := GetBigRandom()
+		if IsPrime(*tmp) {
+			return tmp
+		}
+	}
+}
+
 func GenerateBigPrimeNumberWithLimit(limit *big.Int) *big.Int {
 	for {
 		tmp := GetBigRandomWithLimit(limit)
@@ -176,6 +185,10 @@ func GenerateBigPrimeNumberWithLimit(limit *big.Int) *big.Int {
 }
 
 func IsPrime(number big.Int) bool {
+	return number.ProbablyPrime(20)
+}
+
+func IsPrimeRef(number *big.Int) bool {
 	return number.ProbablyPrime(20)
 }
 

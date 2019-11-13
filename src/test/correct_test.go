@@ -6,6 +6,7 @@ import (
 	"cryptocrouse/src/go/EuclideanAlgorithm"
 	"cryptocrouse/src/go/FastExp"
 	"cryptocrouse/src/go/Fingerprints"
+	"cryptocrouse/src/go/MentalPoker"
 	"cryptocrouse/src/go/RSA"
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
@@ -454,4 +455,14 @@ func TestSignatureGost(t *testing.T) {
 	if wait != in {
 		t.Errorf("Expected %v, got %v", wait, in)
 	}
+}
+
+func TestMentalPoker(t *testing.T) {
+	t.SkipNow()
+	poker, err := MentalPoker.RegistrationRandomUsers(3)
+	if err != nil { t.Errorf("%v\n", err) }
+
+	poker.Round()
+	poker.PrintDeck()
+	poker.PrintUsersCards()
 }
