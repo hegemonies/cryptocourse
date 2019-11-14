@@ -458,7 +458,7 @@ func TestSignatureGost(t *testing.T) {
 }
 
 func TestMentalPoker(t *testing.T) {
-	t.SkipNow()
+	//t.SkipNow()
 	poker, err := MentalPoker.RegistrationRandomUsers(3)
 	if err != nil { t.Errorf("%v\n", err) }
 

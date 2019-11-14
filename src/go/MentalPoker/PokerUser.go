@@ -63,16 +63,16 @@ func (user *PokerUser) get2Cards(deck map[int]*big.Int) {
 	for i := 0; i < 2; i++ {
 		k := rand.Int() % (len(deck) - 1)
 		user.cards[i] = deck[k]
-		fmt.Println(deck[k])
-		fmt.Println(user.cards[i])
 		delete(deck, k)
 	}
 }
 
 func (user *PokerUser) decode2Cards(twoCards [2]*big.Int, p *big.Int) {
-	for i := 0; i < 2; i++ {
-		twoCards[i] = big.NewInt(0).Exp(twoCards[i], user.d, p)
-	}
+	//for i := 0; i < 2; i++ {
+	//	twoCards[i] = big.NewInt(0).Exp(twoCards[i], user.d, p)
+	//}
+	twoCards[0] = big.NewInt(0).Exp(twoCards[0], user.d, p)
+	twoCards[1] = big.NewInt(0).Exp(twoCards[1], user.d, p)
 }
 
 func (user *PokerUser) PrintInfo() {

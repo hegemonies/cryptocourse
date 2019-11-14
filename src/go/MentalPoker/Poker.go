@@ -55,11 +55,15 @@ func (system *PokerSystem) GenerateP() {
 }
 
 func (system *PokerSystem) createUsers(count int) {
+	system.Users = make([]*PokerUser, count)
 	for i := 0; i < count; i++ {
 		user := &PokerUser{}
 		user.name = Fingerprints.GetBigRandom().Text(10)
 		user.GenerateNumbers(system.P)
-		system.Users = append(system.Users, user)
+		user.cards[0] = big.NewInt(0)
+		user.cards[1] = big.NewInt(0)
+		//system.Users = append(system.Users, user)
+		system.Users[i] = user
 	}
 }
 
@@ -91,6 +95,8 @@ func (system *PokerSystem) Round() {
 	for i := 0; i < len(system.Users); i++ {
 		system.ShuffleDeck(system.Users[i])
 		system.EncodeDeck(system.Users[i])
+	}
+	for i := 0; i < len(system.Users); i++ {
 		system.Getting2Cards(system.Users[i])
 		system.DecodeDeck(i)
 	}
