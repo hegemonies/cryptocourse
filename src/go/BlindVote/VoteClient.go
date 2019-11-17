@@ -1,0 +1,61 @@
+package BlindVote
+
+import (
+	"crypto/sha1"
+	"cryptocrouse/src/go/Fingerprints"
+	"encoding/hex"
+	"math/big"
+)
+
+type VoteClient struct {
+	Name string
+	rnd  *big.Int
+	v    *big.Int
+	N    string
+	r    *big.Int
+	h    *big.Int
+	H2   *big.Int
+}
+
+func (client *VoteClient) SetV(v *big.Int) {
+	client.v = v
+	client.generateRnd()
+	client.generateN()
+}
+
+func (client *VoteClient) generateRnd() {
+	client.rnd = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(512), nil)
+}
+
+func (client *VoteClient) generateN() {
+	client.N = client.rnd.Text(10) + client.v.Text(10)
+}
+
+func (client *VoteClient) GenerateR(N *big.Int) {
+	for {
+		client.r = Fingerprints.GetBigRandomWithLimit(MaxP)
+		GCD := big.NewInt(0).GCD(
+			nil,
+			nil,
+			client.r,
+			N)
+		if GCD.Cmp(big.NewInt(1)) == 0 {
+			break
+		}
+	}
+}
+
+func (client *VoteClient) ComputeHash() {
+	h := sha1.New()
+	h.Write([]byte(client.N))
+	checksum := hex.EncodeToString(h.Sum(nil))
+	client.h.SetString(checksum, 10)
+}
+
+func (client *VoteClient) ComputeHash2(d, N *big.Int) {
+	client.H2 = big.NewInt(0).Mod(
+		big.NewInt(0).Mul(
+			client.h,
+			big.NewInt(0).Exp(client.r, d, nil)),
+		N)
+}

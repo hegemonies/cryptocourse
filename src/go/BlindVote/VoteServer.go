@@ -12,6 +12,7 @@ type VoteServer struct {
 	c   *big.Int
 	D   *big.Int
 	phi *big.Int
+	Voted map[string]bool
 }
 
 func InitVoteServer() *VoteServer {
@@ -81,4 +82,6 @@ func (server *VoteServer) generateD() {
 	server.D = Fingerprints.Inversion(server.c, server.phi)
 }
 
-
+func (server *VoteServer) ComputeS2(h2 *big.Int) *big.Int {
+	return big.NewInt(0).Exp(h2, server.c, server.N)
+}

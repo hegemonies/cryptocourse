@@ -38,7 +38,7 @@ func (user *PokerUser) GenerateNumbers(p *big.Int) {
 		}
 	}
 }
-// c= 19015 d=-36405 p=113819
+
 func (user *PokerUser) generateC(p *big.Int) {
 	for {
 		user.c = Fingerprints.GetBigRandomWithLimit(MaxBound)
