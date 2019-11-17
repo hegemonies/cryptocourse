@@ -9,14 +9,14 @@ import (
 
 type PokerUser struct {
 	name      string
-	cards     [2]*big.Int
+	cards     [2]*Card
 	countWins int
 	money     int
 	c         *big.Int
 	d         *big.Int
 }
 
-func (user *PokerUser) shuffleDeck(deck map[int]*big.Int)  {
+func (user *PokerUser) shuffleDeck(deck map[int]*Card)  {
 	rand.Shuffle(len(deck), func(i, j int) {
 		deck[i], deck[j] = deck[j], deck[i]
 	})
@@ -24,10 +24,21 @@ func (user *PokerUser) shuffleDeck(deck map[int]*big.Int)  {
 
 // generate private and public numbers
 func (user *PokerUser) GenerateNumbers(p *big.Int) {
-	user.generateC(p)
-	user.generateD(p)
+	for {
+		user.generateC(p)
+		user.generateD(p)
+		if big.NewInt(0).Mod(
+			big.NewInt(0).Mul(
+				user.c,
+				user.d),
+			big.NewInt(0).Sub(
+				p,
+				big.NewInt(1))).Cmp(big.NewInt(1)) == 0 {
+			break
+		}
+	}
 }
-
+// c= 19015 d=-36405 p=113819
 func (user *PokerUser) generateC(p *big.Int) {
 	for {
 		user.c = Fingerprints.GetBigRandomWithLimit(MaxBound)
@@ -45,41 +56,44 @@ func (user *PokerUser) generateC(p *big.Int) {
 }
 
 func (user *PokerUser) generateD(p *big.Int) {
-	user.d = Fingerprints.Inversion(user.c, big.NewInt(0).Sub(
-		p,
-		big.NewInt(1)))
+	user.d = Fingerprints.Inversion(
+		user.c,
+		big.NewInt(0).Sub(p, big.NewInt(1)))
 }
 
-func (user *PokerUser) encodeDeck(deck map[int]*big.Int, p *big.Int) {
+func (user *PokerUser) encodeDeck(deck map[int]*Card, p *big.Int) {
 	for i := 0; i < len(deck); i++ {
-		deck[i] = big.NewInt(0).Exp(
-			deck[i],
+		deck[i].Num = big.NewInt(0).Exp(
+			deck[i].Num,
 			user.c,
 			p)
 	}
 }
 
-func (user *PokerUser) get2Cards(deck map[int]*big.Int) {
-	for i := 0; i < 2; i++ {
+func (user *PokerUser) get2Cards(deck map[int]*Card) {
+	countGettedCards := 0
+	for countGettedCards != 2 {
 		k := rand.Int() % (len(deck) - 1)
-		user.cards[i] = deck[k]
-		delete(deck, k)
+		card := deck[k]
+		if card != nil {
+			user.cards[countGettedCards] = card
+			countGettedCards++
+			delete(deck, k)
+		}
 	}
 }
 
-func (user *PokerUser) decode2Cards(twoCards [2]*big.Int, p *big.Int) {
-	//for i := 0; i < 2; i++ {
-	//	twoCards[i] = big.NewInt(0).Exp(twoCards[i], user.d, p)
-	//}
-	twoCards[0] = big.NewInt(0).Exp(twoCards[0], user.d, p)
-	twoCards[1] = big.NewInt(0).Exp(twoCards[1], user.d, p)
+func (user *PokerUser) decode2Cards(twoCards [2]*Card, p *big.Int) {
+	for i := 0; i < 2; i++ {
+		twoCards[i].Num = big.NewInt(0).Exp(twoCards[i].Num, user.d, p)
+	}
 }
 
 func (user *PokerUser) PrintInfo() {
-	fmt.Printf("%s 1=%v 2=%v c=%v d=%v\n",
+	fmt.Printf("Name=%6s 1=%12s 2=%12s c=%6v d=%6v\n",
 		user.name,
-		user.cards[0],
-		user.cards[1],
+		user.cards[0].ToString(),
+		user.cards[1].ToString(),
 		user.c,
 		user.d)
 }

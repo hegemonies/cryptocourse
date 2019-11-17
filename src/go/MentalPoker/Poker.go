@@ -9,7 +9,7 @@ import (
 
 type PokerSystem struct {
 	Users    []*PokerUser
-	Deck     map[int]*big.Int
+	Deck     map[int]*Card
 	croupier *PokerUser
 	P        *big.Int
 }
@@ -58,17 +58,28 @@ func (system *PokerSystem) createUsers(count int) {
 	system.Users = make([]*PokerUser, count)
 	for i := 0; i < count; i++ {
 		user := &PokerUser{}
-		user.name = Fingerprints.GetBigRandom().Text(10)
+		for {
+			found := false
+			name := Fingerprints.GetBigRandomWithLimit(MaxBound).Text(10)
+			for j := 0; j < i; j++ {
+				if system.Users[j].name == name {
+					found = true
+					break
+				}
+			}
+			if found == false {
+				user.name = name
+				break
+			}
+		}
 		user.GenerateNumbers(system.P)
-		user.cards[0] = big.NewInt(0)
-		user.cards[1] = big.NewInt(0)
-		//system.Users = append(system.Users, user)
+		user.cards[0], user.cards[1] = &Card{}, &Card{}
 		system.Users[i] = user
 	}
 }
 
 func (system *PokerSystem) GenerateDeck() {
-	system.Deck = make(map[int]*big.Int)
+	system.Deck = make(map[int]*Card, CountCards)
 	for i := 0; i < CountCards; i++ {
 		tmp := Fingerprints.GenerateBigPrimeNumberWithLimit(MaxBound)
 
@@ -77,13 +88,14 @@ func (system *PokerSystem) GenerateDeck() {
 			continue
 		}
 
-		system.Deck[i] = tmp
+		system.Deck[i] = GetCard(i)
+		system.Deck[i].Num = tmp
 	}
 }
 
-func contains(deck map[int]*big.Int, num *big.Int) bool {
+func contains(deck map[int]*Card, num *big.Int) bool {
 	for i := 0; i < len(deck); i++ {
-		if num == deck[i] {
+		if num.Cmp(deck[i].Num) == 0 {
 			return true
 		}
 	}
@@ -98,6 +110,8 @@ func (system *PokerSystem) Round() {
 	}
 	for i := 0; i < len(system.Users); i++ {
 		system.Getting2Cards(system.Users[i])
+	}
+	for i := 0; i < len(system.Users); i++ {
 		system.DecodeDeck(i)
 	}
 }
@@ -126,12 +140,17 @@ func (system *PokerSystem) DecodeDeck(userIndex int) {
 
 func (system *PokerSystem) PrintDeck() {
 	fmt.Println("Deck:")
-	for i := 0; i < len(system.Deck); i++ {
-		fmt.Printf("[%d] %v", i, system.Deck[i])
-		if i % 7 == 0 {
+	for i := 0; i < CountCards; i++ {
+		if card := system.Deck[i]; card != nil {
+			fmt.Printf("[%2d] %12s ", i, system.Deck[i].ToString())
+		} else {
+			fmt.Printf("[%2d]              ", i)
+		}
+		if (i+1) % 4 == 0 {
 			fmt.Println()
 		}
 	}
+	fmt.Println()
 }
 
 func (system *PokerSystem) PrintUsersCards() {
