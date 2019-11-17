@@ -11,7 +11,6 @@ import (
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
 	"cryptocrouse/src/go/VernamCipher"
-	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -463,14 +462,15 @@ func TestMentalPoker(t *testing.T) {
 	poker, err := MentalPoker.RegistrationRandomUsers(3)
 	if err != nil { t.Errorf("%v\n", err) }
 
-	fmt.Println("P=" + poker.P.Text(10))
-
-	snapshotDeck := poker.Copy().Deck
 
 	//poker.PrintDeck()
+	snapshotDeck := poker.Copy()
+
 	poker.Round()
 	//poker.PrintDeck()
 	//poker.PrintUsersCards()
+	//fmt.Println("P=" + poker.P.Text(10))
+
 
 	for i := 0; i < len(poker.Users); i++ {
 		user := poker.Users[i]
@@ -478,7 +478,7 @@ func TestMentalPoker(t *testing.T) {
 			if card := user.Cards[j]; card != nil {
 				found := false
 				for k := 0; k < MentalPoker.CountCards; k++ {
-					if snapshotDeck[k].Compare(card) == true {
+					if snapshotDeck.Deck[k].Compare(card) == true {
 						found = true
 					}
 				}
