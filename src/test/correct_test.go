@@ -459,15 +459,33 @@ func TestSignatureGost(t *testing.T) {
 }
 
 func TestMentalPoker(t *testing.T) {
-	//t.SkipNow()
 	rand.Seed(time.Now().Unix())
 	poker, err := MentalPoker.RegistrationRandomUsers(3)
 	if err != nil { t.Errorf("%v\n", err) }
 
 	fmt.Println("P=" + poker.P.Text(10))
 
-	poker.PrintDeck()
+	snapshotDeck := poker.Copy().Deck
+
+	//poker.PrintDeck()
 	poker.Round()
-	poker.PrintDeck()
-	poker.PrintUsersCards()
+	//poker.PrintDeck()
+	//poker.PrintUsersCards()
+
+	for i := 0; i < len(poker.Users); i++ {
+		user := poker.Users[i]
+		for j := 0; j < 2; j++ {
+			if card := user.Cards[j]; card != nil {
+				found := false
+				for k := 0; k < MentalPoker.CountCards; k++ {
+					if snapshotDeck[k].Compare(card) == true {
+						found = true
+					}
+				}
+				if !found {
+					t.Errorf("Error: not found card %s in original deck.", card.ToString())
+				}
+			}
+		}
+	}
 }

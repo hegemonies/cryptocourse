@@ -194,3 +194,11 @@ func (cardType *CardType) ToString() string {
 	result += cardType.Type
 	return result
 }
+
+func (card *Card) Compare(card2 *Card) bool {
+	return card.Num.Cmp(card2.Num) == 0 && card.Type.Compare(card2.Type)
+}
+
+func (cardType *CardType) Compare(cardType2 *CardType) bool {
+	return cardType.Num == cardType2.Num && cardType.Type == cardType2.Type
+}

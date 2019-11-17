@@ -9,7 +9,7 @@ import (
 
 type PokerUser struct {
 	name      string
-	cards     [2]*Card
+	Cards     [2]*Card
 	countWins int
 	money     int
 	c         *big.Int
@@ -76,7 +76,7 @@ func (user *PokerUser) get2Cards(deck map[int]*Card) {
 		k := rand.Int() % (len(deck) - 1)
 		card := deck[k]
 		if card != nil {
-			user.cards[countGettedCards] = card
+			user.Cards[countGettedCards] = card
 			countGettedCards++
 			delete(deck, k)
 		}
@@ -92,8 +92,8 @@ func (user *PokerUser) decode2Cards(twoCards [2]*Card, p *big.Int) {
 func (user *PokerUser) PrintInfo() {
 	fmt.Printf("Name=%6s 1=%12s 2=%12s c=%6v d=%6v\n",
 		user.name,
-		user.cards[0].ToString(),
-		user.cards[1].ToString(),
+		user.Cards[0].ToString(),
+		user.Cards[1].ToString(),
 		user.c,
 		user.d)
 }

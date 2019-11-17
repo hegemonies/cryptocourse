@@ -73,7 +73,7 @@ func (system *PokerSystem) createUsers(count int) {
 			}
 		}
 		user.GenerateNumbers(system.P)
-		user.cards[0], user.cards[1] = &Card{}, &Card{}
+		user.Cards[0], user.Cards[1] = &Card{}, &Card{}
 		system.Users[i] = user
 	}
 }
@@ -134,7 +134,7 @@ func (system *PokerSystem) Getting2Cards(user *PokerUser) {
 // everybody decode deck
 func (system *PokerSystem) DecodeDeck(userIndex int) {
 	for i := 0; i < len(system.Users); i++ {
-		system.Users[userIndex].decode2Cards(system.Users[i].cards, system.P)
+		system.Users[userIndex].decode2Cards(system.Users[i].Cards, system.P)
 	}
 }
 
@@ -157,4 +157,56 @@ func (system *PokerSystem) PrintUsersCards() {
 	for i := 0; i < len(system.Users); i++ {
 		system.Users[i].PrintInfo()
 	}
+}
+
+func (system *PokerSystem) Copy() *PokerSystem {
+	copy := &PokerSystem{
+		Users:    nil,
+		Deck:     nil,
+		croupier: nil,
+		P:        system.P,
+	}
+
+	//copy.Users = make([]*PokerUser, len(system.Users))
+	//for i := 0; i < len(system.Users); i++ {
+	//	copy.Users[i] = &PokerUser{}
+	//	copy.Users[i].name = system.Users[i].name
+	//	copy.Users[i].c = system.Users[i].c
+	//	copy.Users[i].d = system.Users[i].d
+	//	for j := 0; j < 2; j++ {
+	//		copy.Users[i].Cards[j] = &Card{}
+	//		copy.Users[i].Cards[j].Num = big.NewInt(0)
+	//		copy.Users[i].Cards[j].Num.SetString(system.Users[i].Cards[j].Num.Text(10), 10)
+	//		copy.Users[i].Cards[j].Type = &CardType{}
+	//		copy.Users[i].Cards[j].Type.Num = system.Users[i].Cards[j].Type.Num
+	//		copy.Users[i].Cards[j].Type.Type = system.Users[i].Cards[j].Type.Type
+	//	}
+	//	//copy.Users[i].Cards[0] = &Card{
+	//	//	Num:  big.NewInt(0).SetUint64(system.Users[i].Cards[0].Num.Uint64()),
+	//	//	Type: &CardType{
+	//	//		Num:  system.Users[i].Cards[0].Type.Num,
+	//	//		Type: system.Users[i].Cards[0].Type.Type,
+	//	//	},
+	//	//}
+	//	//copy.Users[i].Cards[1] = &Card{}
+	//	//copy.Users[i].Cards[1] = &Card{
+	//	//	Num:  big.NewInt(0).SetUint64(system.Users[i].Cards[1].Num.Uint64()),
+	//	//	Type: &CardType{
+	//	//		Num:  system.Users[i].Cards[1].Type.Num,
+	//	//		Type: system.Users[i].Cards[1].Type.Type,
+	//	//	},
+	//	//}
+	//}
+	
+	copy.Deck = make(map[int]*Card, CountCards)
+	for i := 0; i < CountCards; i++ {
+		copy.Deck[i] = &Card{}
+		copy.Deck[i].Num, _ = big.NewInt(0).SetString(system.Deck[i].Num.Text(10), 10)
+		copy.Deck[i].Type = &CardType{
+			Num:  system.Deck[i].Type.Num,
+			Type: system.Deck[i].Type.Type,
+		}
+	}
+	
+	return copy
 }
