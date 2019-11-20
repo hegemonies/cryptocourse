@@ -1,6 +1,7 @@
 package test
 
 import (
+	"cryptocrouse/src/go/BlindVote"
 	DF "cryptocrouse/src/go/Diffie-Hellman"
 	elgamalcode "cryptocrouse/src/go/ElGamalCode"
 	"cryptocrouse/src/go/EuclideanAlgorithm"
@@ -487,5 +488,27 @@ func TestMentalPoker(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+
+func TestBlindVote(t *testing.T) {
+	server := BlindVote.InitVoteServer()
+	server.GenerateNumbers()
+
+	client := &BlindVote.VoteClient{}
+	client.Name = "Alice"
+	client.SetV(BlindVote.CandidateB)
+	client.GenerateR(server.N)
+	client.ComputeHash()
+	client.ComputeHash2(server.D, server.N)
+
+	server.GiveOutNewsletterTo(client.Name)
+	client.ComputeS(server.ComputeS2(client.H2))
+
+	server.AddNewsletter(client.Name, client.GetNewsletter())
+	err := server.CheckCorrectNewsletter(client.Name)
+	if err != nil {
+		t.Errorf(err.Error())
 	}
 }

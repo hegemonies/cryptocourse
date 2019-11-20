@@ -13,6 +13,7 @@ type VoteClient struct {
 	v    *big.Int
 	N    string
 	r    *big.Int
+	s    *big.Int
 	h    *big.Int
 	H2   *big.Int
 }
@@ -49,6 +50,7 @@ func (client *VoteClient) ComputeHash() {
 	h := sha1.New()
 	h.Write([]byte(client.N))
 	checksum := hex.EncodeToString(h.Sum(nil))
+	client.h = big.NewInt(0)
 	client.h.SetString(checksum, 10)
 }
 
@@ -58,4 +60,21 @@ func (client *VoteClient) ComputeHash2(d, N *big.Int) {
 			client.h,
 			big.NewInt(0).Exp(client.r, d, nil)),
 		N)
+}
+
+func (client *VoteClient) ComputeS(s2 *big.Int) {
+	n, _ := big.NewInt(0).SetString(client.N, 10)
+	client.s = big.NewInt(0).Mod(
+		big.NewInt(0).Mul(
+			s2,
+			Fingerprints.Inversion(client.r, n)),
+		n)
+}
+
+func (client *VoteClient) GetNewsletter() Newsletter {
+	n, _ := big.NewInt(0).SetString(client.N, 10)
+	return Newsletter{
+		N: n,
+		S: client.s,
+	}
 }
