@@ -47,18 +47,23 @@ func (client *VoteClient) GenerateR(N *big.Int) {
 }
 
 func (client *VoteClient) ComputeHash() {
-	h := sha1.New()
-	h.Write([]byte(client.N))
-	checksum := hex.EncodeToString(h.Sum(nil))
-	client.h = big.NewInt(0)
-	client.h.SetString(checksum, 10)
+	hasher := sha1.New()
+	hasher.Write([]byte(client.N))
+	checksum := hasher.Sum(nil)
+	hexstr := hex.EncodeToString(checksum)
+	client.h, _ = big.NewInt(0).SetString(hexstr, 16)
 }
 
 func (client *VoteClient) ComputeHash2(d, N *big.Int) {
+	//client.H2 = big.NewInt(0).Mod(
+	//	big.NewInt(0).Mul(
+	//		client.h,
+	//		big.NewInt(0).Exp(client.r, d, nil)),
+	//	N)
 	client.H2 = big.NewInt(0).Mod(
 		big.NewInt(0).Mul(
-			client.h,
-			big.NewInt(0).Exp(client.r, d, nil)),
+			big.NewInt(0).Exp(client.h, big.NewInt(1), N),
+			big.NewInt(0).Exp(client.r, d, N)),
 		N)
 }
 

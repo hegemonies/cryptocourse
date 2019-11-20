@@ -5,6 +5,7 @@ import (
 	"cryptocrouse/src/go/Fingerprints"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/big"
 )
 
@@ -115,6 +116,10 @@ func (server *VoteServer) CheckCorrectNewsletter(name string) (err error) {
 			server.D,
 			server.N)
 
+		fmt.Printf("N= %v\n", server.N)
+		fmt.Printf("lvalue= %v\n", lvalue)
+		fmt.Printf("rvalue= %v\n", rvalue)
+
 		if lvalue.Cmp(rvalue) != 0 {
 			return errors.New("Error check newsletter: not correct ")
 		}
@@ -127,11 +132,12 @@ func (server *VoteServer) CheckCorrectNewsletter(name string) (err error) {
 }
 
 func ComputeHash(str string) *big.Int {
-	h := sha1.New()
-	h.Write([]byte(str))
-	checksum := hex.EncodeToString(h.Sum(nil))
-	hash, _ := big.NewInt(0).SetString(checksum, 10)
-	return hash
+	hasher := sha1.New()
+	hasher.Write([]byte(str))
+	checksum := hasher.Sum(nil)
+	hexstr := hex.EncodeToString(checksum)
+	res, _ := big.NewInt(0).SetString(hexstr, 16)
+	return res
 }
 
 func (server *VoteServer) GiveOutNewsletterTo(name string) {
