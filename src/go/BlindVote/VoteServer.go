@@ -5,7 +5,6 @@ import (
 	"cryptocrouse/src/go/Fingerprints"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"math/big"
 )
 
@@ -115,10 +114,6 @@ func (server *VoteServer) CheckCorrectNewsletter(name string) (err error) {
 			newsletter.S,
 			server.D,
 			server.N)
-
-		fmt.Printf("N= %v\n", server.N)
-		fmt.Printf("lvalue= %v\n", lvalue)
-		fmt.Printf("rvalue= %v\n", rvalue)
 
 		if lvalue.Cmp(rvalue) != 0 {
 			return errors.New("Error check newsletter: not correct ")

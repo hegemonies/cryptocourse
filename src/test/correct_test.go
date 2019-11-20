@@ -12,7 +12,6 @@ import (
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
 	"cryptocrouse/src/go/VernamCipher"
-	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -494,7 +493,6 @@ func TestMentalPoker(t *testing.T) {
 
 
 func TestBlindVote(t *testing.T) {
-	t.SkipNow()
 	rand.Seed(time.Now().Unix())
 
 	server := BlindVote.InitVoteServer()
@@ -505,12 +503,10 @@ func TestBlindVote(t *testing.T) {
 	client.SetV(BlindVote.CandidateB)
 	client.GenerateR(server.N)
 	client.ComputeHash()
-	fmt.Println("hash 1 ok")
 	client.ComputeHash2(server.D, server.N)
-	fmt.Println("hash 2 ok")
 
 	server.GiveOutNewsletterTo(client.Name)
-	client.ComputeS(server.ComputeS2(client.H2))
+	client.ComputeS(server.ComputeS2(client.H2), server.N)
 
 	server.AddNewsletter(client.Name, client.GetNewsletter())
 	err := server.CheckCorrectNewsletter(client.Name)
