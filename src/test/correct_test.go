@@ -12,6 +12,7 @@ import (
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
 	"cryptocrouse/src/go/VernamCipher"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -460,9 +461,10 @@ func TestSignatureGost(t *testing.T) {
 
 func TestMentalPoker(t *testing.T) {
 	rand.Seed(time.Now().Unix())
-	poker, err := MentalPoker.RegistrationRandomUsers(23)
+	poker, err := MentalPoker.RegistrationRandomUsers(15)
 	if err != nil { t.Errorf("%v\n", err) }
 
+	fmt.Printf("Original ")
 	poker.PrintDeck()
 	snapshotDeck := poker.Copy()
 
@@ -490,7 +492,7 @@ func TestMentalPoker(t *testing.T) {
 }
 
 
-func TestBlindVote(t *testing.T) {
+func TestBlindVoteDecomposite(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
 	server := BlindVote.InitVoteServer()
@@ -503,12 +505,34 @@ func TestBlindVote(t *testing.T) {
 	client.ComputeHash()
 	client.ComputeHash2(server.D, server.N)
 
-	server.GiveOutNewsletterTo(client.Name)
 	client.ComputeS(server.ComputeS2(client.H2), server.N)
 
-	server.AddNewsletter(client.Name, client.GetNewsletter())
-	err := server.CheckCorrectNewsletter(client.Name)
+	if !server.CheckCorrectNewsletter(client.GetNewsletter()) {
+		t.Errorf("Not correct newsletter")
+	}
+}
+
+func TestBlindVote(t *testing.T) {
+	bv := BlindVote.InitBlindVoter()
+	clientName := "Alice"
+	err := bv.Vote(clientName, BlindVote.CandidateA)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
+	bv.PrintCorrectNewsletters()
+}
+
+func TestBlindVoteWithError(t *testing.T) {
+	bv := BlindVote.InitBlindVoter()
+	clientName := "Alice"
+	err := bv.Vote(clientName, BlindVote.CandidateA)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	err2 := bv.Vote(clientName, BlindVote.CandidateC)
+	fmt.Println(err2.Error())
+	if err2 == nil {
+		t.Errorf("Error in vote. ")
+	}
+	bv.PrintCorrectNewsletters()
 }

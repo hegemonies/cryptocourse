@@ -4,7 +4,6 @@ import (
 	"crypto/sha1"
 	"cryptocrouse/src/go/Fingerprints"
 	"encoding/hex"
-	"errors"
 	"math/big"
 )
 
@@ -15,18 +14,12 @@ type VoteServer struct {
 	c   *big.Int
 	D   *big.Int
 	phi *big.Int
-	Voted map[string]bool
-	newsletters map[string]Newsletter
-	GiveOutsNewsletter map[string]bool
-	CorrectNewsletter []Newsletter
+	CorrectNewsletter []*Newsletter
 }
 
 func InitVoteServer() *VoteServer {
 	server := &VoteServer{}
-	server.Voted = make(map[string]bool)
-	server.newsletters = make(map[string]Newsletter)
-	server.GiveOutsNewsletter = make(map[string]bool)
-	server.CorrectNewsletter = make([]Newsletter, 0)
+	server.CorrectNewsletter = make([]*Newsletter, 0)
 
 	return server
 }
@@ -99,31 +92,18 @@ func (server *VoteServer) ComputeS2(h2 *big.Int) *big.Int {
 	return big.NewInt(0).Exp(h2, server.c, server.N)
 }
 
-func (server *VoteServer) CommitVote(name string)  {
-	server.Voted[name] = true
-}
+func (server *VoteServer) CheckCorrectNewsletter(newsletter *Newsletter) bool {
+	lvalue := ComputeHash(newsletter.N.Text(10))
+	rvalue := big.NewInt(0).Exp(
+		newsletter.S,
+		server.D,
+		server.N)
 
-func (server *VoteServer) AddNewsletter(name string, newsletter Newsletter) {
-	server.newsletters[name] = newsletter
-}
-
-func (server *VoteServer) CheckCorrectNewsletter(name string) (err error) {
-	if newsletter, ok := server.newsletters[name]; ok {
-		lvalue := ComputeHash(newsletter.N.Text(10))
-		rvalue := big.NewInt(0).Exp(
-			newsletter.S,
-			server.D,
-			server.N)
-
-		if lvalue.Cmp(rvalue) != 0 {
-			return errors.New("Error check newsletter: not correct ")
-		}
-
-		server.CommitVote(name)
-		server.CorrectNewsletter = append(server.CorrectNewsletter, newsletter)
+	if lvalue.Cmp(rvalue) != 0 {
+		return false
 	}
 
-	return nil
+	return true
 }
 
 func ComputeHash(str string) *big.Int {
@@ -135,6 +115,4 @@ func ComputeHash(str string) *big.Int {
 	return res
 }
 
-func (server *VoteServer) GiveOutNewsletterTo(name string) {
-	server.GiveOutsNewsletter[name] = true
-}
+

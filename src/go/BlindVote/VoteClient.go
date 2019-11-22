@@ -70,9 +70,9 @@ func (client *VoteClient) ComputeS(s2 *big.Int, N *big.Int) {
 		N)
 }
 
-func (client *VoteClient) GetNewsletter() Newsletter {
+func (client *VoteClient) GetNewsletter() *Newsletter {
 	n, _ := big.NewInt(0).SetString(client.N, 10)
-	return Newsletter{
+	return &Newsletter{
 		N: n,
 		S: client.s,
 	}
