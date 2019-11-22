@@ -79,7 +79,7 @@ func (system *PokerSystem) createUsers(count int) {
 }
 
 func (system *PokerSystem) GenerateDeck() {
-	system.Deck = make(map[int]*Card, CountCards)
+	system.Deck = make([]*Card, CountCards)
 	for i := 0; i < CountCards; i++ {
 		tmp := Fingerprints.GenerateBigPrimeNumberWithLimit(MaxBound)
 
@@ -93,10 +93,12 @@ func (system *PokerSystem) GenerateDeck() {
 	}
 }
 
-func contains(deck map[int]*Card, num *big.Int) bool {
+func contains(deck []*Card, num *big.Int) bool {
 	for i := 0; i < len(deck); i++ {
-		if num.Cmp(deck[i].Num) == 0 {
-			return true
+		if deck[i] != nil {
+			if num.Cmp(deck[i].Num) == 0 {
+				return true
+			}
 		}
 	}
 
@@ -108,12 +110,10 @@ func (system *PokerSystem) Round() {
 		system.ShuffleDeck(system.Users[i])
 		system.EncodeDeck(system.Users[i])
 	}
+	fmt.Printf("Encoded ")
+	system.PrintDeck()
 	for i := 0; i < len(system.Users); i++ {
 		system.Getting2Cards(system.Users[i])
-		//for j := 0; j < 2; j++ {
-		//	system.Users[i].Cards[j] = system.Deck[i]
-		//	i++
-		//}
 	}
 	for i := 0; i < len(system.Users); i++ {
 		system.DecodeDeck(i)
@@ -132,7 +132,7 @@ func (system *PokerSystem) EncodeDeck(user *PokerUser) {
 
 // everybody get 2 cards
 func (system *PokerSystem) Getting2Cards(user *PokerUser) {
-	user.get2Cards(system.Deck)
+	system.Deck = user.get2Cards(system.Deck)
 }
 
 // everybody decode deck
@@ -144,7 +144,7 @@ func (system *PokerSystem) DecodeDeck(userIndex int) {
 
 func (system *PokerSystem) PrintDeck() {
 	fmt.Println("Deck:")
-	for i := 0; i < CountCards; i++ {
+	for i := 0; i < len(system.Deck); i++ {
 		if card := system.Deck[i]; card != nil {
 			fmt.Printf("[%2d] %12s ", i, system.Deck[i].ToString())
 		} else {
@@ -159,6 +159,7 @@ func (system *PokerSystem) PrintDeck() {
 
 func (system *PokerSystem) PrintUsersCards() {
 	for i := 0; i < len(system.Users); i++ {
+		fmt.Printf("[%2d] ", i)
 		system.Users[i].PrintInfo()
 	}
 }
@@ -202,7 +203,7 @@ func (system *PokerSystem) Copy() *PokerSystem {
 	//	//}
 	//}
 	
-	copy.Deck = make(map[int]*Card, CountCards)
+	copy.Deck = make([]*Card, CountCards)
 	for i := 0; i < CountCards; i++ {
 		copy.Deck[i] = &Card{}
 		copy.Deck[i].Num, _ = big.NewInt(0).SetString(system.Deck[i].Num.Text(10), 10)

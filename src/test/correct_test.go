@@ -12,7 +12,6 @@ import (
 	"cryptocrouse/src/go/ShamirCode"
 	"cryptocrouse/src/go/ShanksAlgorithm"
 	"cryptocrouse/src/go/VernamCipher"
-	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -460,22 +459,17 @@ func TestSignatureGost(t *testing.T) {
 }
 
 func TestMentalPoker(t *testing.T) {
-	t.SkipNow()
 	rand.Seed(time.Now().Unix())
-	poker, err := MentalPoker.RegistrationRandomUsers(5)
+	poker, err := MentalPoker.RegistrationRandomUsers(23)
 	if err != nil { t.Errorf("%v\n", err) }
-
 
 	poker.PrintDeck()
 	snapshotDeck := poker.Copy()
 
-	fmt.Println("round start")
 	poker.Round()
-	fmt.Println("round end")
 	poker.PrintDeck()
 	poker.PrintUsersCards()
 	//fmt.Println("P=" + poker.P.Text(10))
-
 
 	for i := 0; i < len(poker.Users); i++ {
 		user := poker.Users[i]

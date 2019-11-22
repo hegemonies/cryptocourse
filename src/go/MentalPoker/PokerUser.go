@@ -16,7 +16,7 @@ type PokerUser struct {
 	d         *big.Int
 }
 
-func (user *PokerUser) shuffleDeck(deck map[int]*Card)  {
+func (user *PokerUser) shuffleDeck(deck []*Card)  {
 	rand.Shuffle(len(deck), func(i, j int) {
 		deck[i], deck[j] = deck[j], deck[i]
 	})
@@ -61,7 +61,7 @@ func (user *PokerUser) generateD(p *big.Int) {
 		big.NewInt(0).Sub(p, big.NewInt(1)))
 }
 
-func (user *PokerUser) encodeDeck(deck map[int]*Card, p *big.Int) {
+func (user *PokerUser) encodeDeck(deck []*Card, p *big.Int) {
 	for i := 0; i < len(deck); i++ {
 		deck[i].Num = big.NewInt(0).Exp(
 			deck[i].Num,
@@ -70,17 +70,21 @@ func (user *PokerUser) encodeDeck(deck map[int]*Card, p *big.Int) {
 	}
 }
 
-func (user *PokerUser) get2Cards(deck map[int]*Card) {
+func (user *PokerUser) get2Cards(deck []*Card) []*Card {
 	countGettedCards := 0
 	for countGettedCards != 2 {
 		k := rand.Int() % (len(deck) - 1)
 		card := deck[k]
-		if card != nil {
-			user.Cards[countGettedCards] = card
-			countGettedCards++
-			delete(deck, k)
-		}
+		user.Cards[countGettedCards] = card
+		countGettedCards++
+		deck = Remove(deck, k)
 	}
+	return deck
+}
+
+func Remove(s []*Card, i int) []*Card {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
 }
 
 func (user *PokerUser) decode2Cards(twoCards [2]*Card, p *big.Int) {
@@ -90,10 +94,14 @@ func (user *PokerUser) decode2Cards(twoCards [2]*Card, p *big.Int) {
 }
 
 func (user *PokerUser) PrintInfo() {
-	fmt.Printf("Name=%6s 1=%12s 2=%12s c=%6v d=%6v\n",
+	//fmt.Printf("Name=%6s 1=%12s 2=%12s c=%6v d=%6v\n",
+	//	user.name,
+	//	user.Cards[0].ToString(),
+	//	user.Cards[1].ToString(),
+	//	user.c,
+	//	user.d)
+	fmt.Printf("\"%6s\" [%10s] [%10s]\n",
 		user.name,
 		user.Cards[0].ToString(),
-		user.Cards[1].ToString(),
-		user.c,
-		user.d)
+		user.Cards[1].ToString())
 }
