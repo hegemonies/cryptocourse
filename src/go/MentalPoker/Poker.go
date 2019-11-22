@@ -9,7 +9,7 @@ import (
 
 type PokerSystem struct {
 	Users    []*PokerUser
-	Deck     map[int]*Card
+	Deck     []*Card
 	croupier *PokerUser
 	P        *big.Int
 }
@@ -110,6 +110,10 @@ func (system *PokerSystem) Round() {
 	}
 	for i := 0; i < len(system.Users); i++ {
 		system.Getting2Cards(system.Users[i])
+		//for j := 0; j < 2; j++ {
+		//	system.Users[i].Cards[j] = system.Deck[i]
+		//	i++
+		//}
 	}
 	for i := 0; i < len(system.Users); i++ {
 		system.DecodeDeck(i)
