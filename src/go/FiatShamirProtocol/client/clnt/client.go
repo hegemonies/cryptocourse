@@ -77,7 +77,10 @@ func (c *Client) receiveN() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = c.writer.Flush()
+	err = c.writer.Flush()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -98,7 +101,10 @@ func (c *Client) receiveN() {
 
 func (c *Client) generateS() {
 	for {
-		c.data.S = Fingerprints.GetBigRandomWithLimit(MAX_P)
+		c.data.S = Fingerprints.GetBigRandomWithLimit(c.data.N)
+		if c.data.S.Cmp(big.NewInt(1)) == 0 {
+			continue
+		}
 		GCD := big.NewInt(0).GCD(
 			nil,
 			nil,
@@ -143,7 +149,7 @@ func (c *Client) computeY() {
 func (c *Client) generateR() {
 	for {
 		//c.data.R = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(16), nil)
-		c.data.R = Fingerprints.GetBigRandomWithLimit(MAX_P)
+		c.data.R = Fingerprints.GetBigRandomWithLimit(c.data.N)
 		if c.data.R.Cmp(big.NewInt(1)) > 0 && c.data.R.Cmp(c.data.N) < 0 {
 			break
 		}

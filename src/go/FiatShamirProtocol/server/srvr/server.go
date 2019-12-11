@@ -147,20 +147,18 @@ func (s *Server) computeY(y *big.Int, x *big.Int, v *big.Int, w *bufio.Writer, e
 		return FiatShamirProtocol.COMMAND_ANSWER_CODE_ERROR
 	}
 
-	l := big.NewInt(0).Exp(y, big.NewInt(2), nil)
+	l := big.NewInt(0).Exp(y, big.NewInt(2), s.data.N)
 	var r *big.Int
 
 	switch e {
 	case 0:
-		r = big.NewInt(0).Mod(x, s.data.N)
+		r = x
 	case 1:
 		r = big.NewInt(0).Mod(
 			big.NewInt(0).Mul(
 				x,
 				v),
 			s.data.N)
-	default:
-		r = l
 	}
 
 	log.Printf("l = %s r = %s\n", l.Text(10), r.Text(10))
@@ -195,15 +193,15 @@ func generateE() int {
 	return answer
 }
 
-func (data *ServerData) generateQ() *big.Int {
-	return Fingerprints.GenerateBigPrimeNumberWithLimit(MIN_P)
+func (data *ServerData) generateQ() {
+	data.q = Fingerprints.GenerateBigPrimeNumberWithLimit(MIN_P)
 }
 
 func (data *ServerData) generateP() {
 	data.p = big.NewInt(0)
 
 	for {
-		data.q = data.generateQ()
+		data.generateQ()
 		data.p.Add(
 			big.NewInt(0).Mul(
 				big.NewInt(2),
