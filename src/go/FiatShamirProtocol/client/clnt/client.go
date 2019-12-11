@@ -116,6 +116,7 @@ func (c *Client) receiveE() {
 	_ = c.writer.Flush()
 
 	msg, _ := c.reader.ReadString('\n')
+	msg = strings.TrimSuffix(msg, "\n")
 	log.Printf("received E: %s\n", msg)
 
 	c.data.E, _ = strconv.Atoi(msg)
@@ -160,9 +161,11 @@ func (c *Client) sendX() {
 func (c *Client) sendY() {
 	_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_Y + "\n")
 	_ = c.writer.Flush()
+	log.Println("Send " + FiatShamirProtocol.COMMAND_GET_Y)
 
 	_, _ = c.writer.WriteString(c.data.Y.Text(10) + "\n")
 	_ = c.writer.Flush()
+	log.Printf("Send Y %s\n", c.data.Y.Text(10))
 }
 
 func (c *Client) sendV() {
