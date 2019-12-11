@@ -50,7 +50,7 @@ func (s *Server) serverListen() {
 	for {
 		conn, err := l.Accept()
 		if err != nil {
-			log.Fatalf("Error accepting: ", err.Error())
+			log.Fatalf("Error accepting: %s\n", err.Error())
 		}
 
 		log.Printf("New connection: %s\n", conn.RemoteAddr())
@@ -60,10 +60,6 @@ func (s *Server) serverListen() {
 }
 
 func (s *Server) startRound(conn net.Conn) {
-	//defer func() {
-	//	log.Printf("closing connection from %v\n", conn.RemoteAddr())
-	//	conn.Close()
-	//}()
 	r := bufio.NewReader(conn)
 	w := bufio.NewWriter(conn)
 	scanr := bufio.NewScanner(r)
