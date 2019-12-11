@@ -9,6 +9,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Server struct {
@@ -94,6 +95,7 @@ func (s *Server) startRound(conn net.Conn) {
 			y = s.receiveY(r)
 			statusCode := s.computeY(y, x, v, w, e)
 			s.sendAnswerCode(w, statusCode)
+			return
 		case FiatShamirProtocol.COMMAND_GET_V:
 			v = s.receiveV(r)
 		case FiatShamirProtocol.COMMAND_GET_E:
@@ -131,9 +133,10 @@ func (s *Server) sendE(w *bufio.Writer, e int) {
 }
 
 func (s *Server) receiveY(r *bufio.Reader) *big.Int {
-	recMsg, _ := r.ReadString('\n')
-	y, _ := big.NewInt(0).SetString(recMsg, 10)
-	log.Printf("Receive y: %s\n", recMsg)
+	msg, _ := r.ReadString('\n')
+	msg = strings.TrimSuffix(msg, "\n")
+	y, _ := big.NewInt(0).SetString(msg, 10)
+	log.Printf("Receive y: %s\n", msg)
 	return y
 }
 
@@ -149,14 +152,18 @@ func (s *Server) computeY(y *big.Int, x *big.Int, v *big.Int, w *bufio.Writer, e
 
 	switch e {
 	case 0:
-		r = x
+		r = big.NewInt(0).Mod(x, s.data.N)
 	case 1:
 		r = big.NewInt(0).Mod(
 			big.NewInt(0).Mul(
 				x,
 				v),
 			s.data.N)
+	default:
+		r = l
 	}
+
+	log.Printf("l = %s r = %s\n", l.Text(10), r.Text(10))
 
 	code := ""
 
@@ -170,16 +177,22 @@ func (s *Server) computeY(y *big.Int, x *big.Int, v *big.Int, w *bufio.Writer, e
 }
 
 func (s *Server) sendAnswerCode(w *bufio.Writer, statusCode string) {
-	_, _ = w.WriteString(statusCode)
-	_ = w.Flush()
+	_, err := w.WriteString(statusCode + "\n")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = w.Flush()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Send status code: " + statusCode)
+	time.Sleep(50 * time.Millisecond)
 }
 
 func generateE() int {
-	rand := Fingerprints.GenerateBigPrimeNumber()
-	if rand.Cmp(BOUND) > 0 {
-		return 1
-	}
-	return 0
+	rand := Fingerprints.GetBigRandom()
+	answer, _ := strconv.Atoi(big.NewInt(0).Mod(rand, big.NewInt(2)).Text(10))
+	return answer
 }
 
 func (data *ServerData) generateQ() *big.Int {

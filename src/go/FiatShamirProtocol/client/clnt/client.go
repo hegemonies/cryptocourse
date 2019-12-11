@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Client struct {
@@ -78,6 +79,8 @@ func (c *Client) receiveN() {
 	}
 	_ = c.writer.Flush()
 
+	time.Sleep(50 * time.Millisecond)
+
 	msg, err := c.reader.ReadString('\n')
 	if err != nil {
 		log.Fatal(err)
@@ -115,6 +118,8 @@ func (c *Client) receiveE() {
 	_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_E + "\n")
 	_ = c.writer.Flush()
 
+	time.Sleep(50 * time.Millisecond)
+
 	msg, _ := c.reader.ReadString('\n')
 	msg = strings.TrimSuffix(msg, "\n")
 	log.Printf("received E: %s\n", msg)
@@ -125,7 +130,7 @@ func (c *Client) receiveE() {
 func (c *Client) computeY() {
 	switch c.data.E {
 	case 0:
-		c.data.Y = c.data.S
+		c.data.Y = c.data.R
 	case 1:
 		c.data.Y = big.NewInt(0).Mod(
 			big.NewInt(0).Mul(
@@ -137,7 +142,8 @@ func (c *Client) computeY() {
 
 func (c *Client) generateR() {
 	for {
-		c.data.R = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(16), nil)
+		//c.data.R = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(16), nil)
+		c.data.R = Fingerprints.GetBigRandomWithLimit(MAX_P)
 		if c.data.R.Cmp(big.NewInt(1)) > 0 && c.data.R.Cmp(c.data.N) < 0 {
 			break
 		}
@@ -153,9 +159,13 @@ func (c *Client) sendX() {
 	_ = c.writer.Flush()
 	log.Println("Send " + FiatShamirProtocol.COMMAND_GET_X)
 
+	time.Sleep(50 * time.Millisecond)
+
 	_, _ = c.writer.WriteString(c.data.X.Text(10) + "\n")
 	_ = c.writer.Flush()
 	log.Printf("Send X %s\n", c.data.X.Text(10))
+
+	time.Sleep(50 * time.Millisecond)
 }
 
 func (c *Client) sendY() {
@@ -163,9 +173,13 @@ func (c *Client) sendY() {
 	_ = c.writer.Flush()
 	log.Println("Send " + FiatShamirProtocol.COMMAND_GET_Y)
 
+	time.Sleep(50 * time.Millisecond)
+
 	_, _ = c.writer.WriteString(c.data.Y.Text(10) + "\n")
 	_ = c.writer.Flush()
 	log.Printf("Send Y %s\n", c.data.Y.Text(10))
+
+	time.Sleep(50 * time.Millisecond)
 }
 
 func (c *Client) sendV() {
@@ -173,22 +187,26 @@ func (c *Client) sendV() {
 	_ = c.writer.Flush()
 	log.Println("Send " + FiatShamirProtocol.COMMAND_GET_V)
 
+	time.Sleep(50 * time.Millisecond)
+
 	_, _ = c.writer.WriteString(c.data.V.Text(10) + "\n")
 	_ = c.writer.Flush()
 	log.Printf("Send V %s\n", c.data.V.Text(10))
+
+	time.Sleep(50 * time.Millisecond)
 }
 
 func (c *Client) getAnswer() {
-	s := bufio.NewScanner(c.reader)
-	scanned := s.Scan()
-	if !scanned {
-		if err := s.Err(); err != nil {
-			log.Printf("%v(%v)\n", err, c.conn.RemoteAddr())
-			return
-		}
+	log.Println("Wait answer")
+	msg, err := c.reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	switch s.Text() {
+	msg = strings.TrimSuffix(msg, "\n")
+	log.Printf("received answer: ~%s~\n", msg)
+
+	switch msg {
 	case FiatShamirProtocol.COMMAND_ANSWER_CODE_SUCCESS:
 		log.Println("Round ok")
 	case FiatShamirProtocol.COMMAND_ANSWER_CODE_ERROR:
@@ -197,16 +215,3 @@ func (c *Client) getAnswer() {
 		log.Println("Round fi")
 	}
 }
-
-//for {
-//fmt.Print(">> ")
-//text, _ := rStdin.ReadString('\n')
-//_, _ = fmt.Fprintf(conn, text)
-//
-//message, _ := rConn.ReadString('\n')
-//fmt.Print("->: " + message)
-//if strings.TrimSpace(text) == "STOP" {
-//fmt.Println("TCP client exiting...")
-//return
-//}
-//}
