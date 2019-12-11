@@ -95,7 +95,6 @@ func (s *Server) startRound(conn net.Conn) {
 			y = s.receiveY(r)
 			statusCode := s.computeY(y, x, v, w, e)
 			s.sendAnswerCode(w, statusCode)
-			return
 		case FiatShamirProtocol.COMMAND_GET_V:
 			v = s.receiveV(r)
 		case FiatShamirProtocol.COMMAND_GET_E:

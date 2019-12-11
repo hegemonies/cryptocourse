@@ -56,7 +56,17 @@ func (c* Client) setupConnections() {
 	c.writer = bufio.NewWriter(c.conn)
 }
 
-func (c *Client) Round() {
+func (c *Client) StartProof() {
+	for i := 0; i < 10; i++ {
+		answerCode := c.round()
+		if answerCode == false {
+			log.Fatalf("Can not proof on %d iteration\n", i)
+			return
+		}
+	}
+}
+
+func (c *Client) round() bool {
 	c.receiveN()
 	c.generateS()
 	c.computeV()
@@ -69,7 +79,7 @@ func (c *Client) Round() {
 	c.receiveE()
 	c.computeY()
 	c.sendY()
-	c.getAnswer()
+	return c.getAnswer()
 }
 
 func (c *Client) receiveN() {
@@ -148,7 +158,6 @@ func (c *Client) computeY() {
 
 func (c *Client) generateR() {
 	for {
-		//c.data.R = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(16), nil)
 		c.data.R = Fingerprints.GetBigRandomWithLimit(c.data.N)
 		if c.data.R.Cmp(big.NewInt(1)) > 0 && c.data.R.Cmp(c.data.N) < 0 {
 			break
@@ -202,7 +211,7 @@ func (c *Client) sendV() {
 	time.Sleep(50 * time.Millisecond)
 }
 
-func (c *Client) getAnswer() {
+func (c *Client) getAnswer() bool {
 	log.Println("Wait answer")
 	msg, err := c.reader.ReadString('\n')
 	if err != nil {
@@ -215,9 +224,12 @@ func (c *Client) getAnswer() {
 	switch msg {
 	case FiatShamirProtocol.COMMAND_ANSWER_CODE_SUCCESS:
 		log.Println("Round ok")
+		return true
 	case FiatShamirProtocol.COMMAND_ANSWER_CODE_ERROR:
 		log.Println("Round bad")
+		return false
 	default:
 		log.Println("Round fi")
+		return false
 	}
 }
