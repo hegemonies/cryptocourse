@@ -20,10 +20,19 @@ type ServerData struct {
 	p *big.Int
 	q *big.Int
 	N *big.Int
+	V []*big.Int
 }
 
 func ServerInit() *Server {
-	return &Server{}
+	data := ServerData{
+		p: big.NewInt(0),
+		q: big.NewInt(0),
+		N: big.NewInt(0),
+		V: make([]*big.Int, 0),
+	}
+	return &Server{
+		data: data,
+	}
 }
 
 func (s *Server) Run() {
@@ -93,10 +102,31 @@ func (s *Server) startRound(conn net.Conn) {
 			s.sendAnswerCode(w, statusCode)
 		case FiatShamirProtocol.COMMAND_GET_V:
 			v = s.receiveV(r)
+			s.data.V = append(s.data.V, v)
+		case FiatShamirProtocol.COMMAND_SERVER_GET_V:
+			s.sendV(w)
 		case FiatShamirProtocol.COMMAND_GET_E:
 			s.sendE(w, e)
 		}
 	}
+
+
+	for t := 0; t < 20; t++ {
+		s.sendN(w)
+		s.sendArrayV(w)
+		v := s.receiveV(r)
+		s.data.V = append(s.data.V, v)
+		x := s.receiveX(r)
+		e := generateE()
+		s.sendE(w, e)
+		y = s.receiveY(r)
+		statusCode := s.computeY(y, x, v, w, e)
+		s.sendAnswerCode(w, statusCode)
+		if statusCode == FiatShamirProtocol.COMMAND_ANSWER_CODE_ERROR {
+			log.Printf("Accepting is BAD for [%d]\n", conn.RemoteAddr())
+		}
+	}
+	log.Printf("Accepting is SUCCESSFUL for [%d]\n", conn.RemoteAddr())
 }
 
 func (s *Server) sendN(w *bufio.Writer) {
@@ -180,6 +210,22 @@ func (s *Server) sendAnswerCode(w *bufio.Writer, statusCode string) {
 	}
 	log.Println("Send status code: " + statusCode)
 	time.Sleep(50 * time.Millisecond)
+}
+
+func (s *Server) sendV(w *bufio.Writer) {
+	vString := ""
+	for _, v := range s.data.V {
+		vString += v.Text(10) + ","
+	}
+
+	vString = strings.TrimSuffix(vString, ",")
+	_, _ = w.WriteString(vString + "\n")
+	_ = w.Flush()
+	log.Printf("Send array V %s\n", vString)
+}
+
+func (s *Server) sendArrayV(writer *bufio.Writer) {
+
 }
 
 func generateE() int {

@@ -57,7 +57,7 @@ func (c* Client) setupConnections() {
 }
 
 func (c *Client) StartProof() {
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 20; i++ {
 		answerCode := c.round()
 		if answerCode == false {
 			log.Fatalf("Can not proof on %d iteration\n", i)
@@ -83,14 +83,14 @@ func (c *Client) round() bool {
 }
 
 func (c *Client) receiveN() {
-	_, err := c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_N + "\n")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = c.writer.Flush()
-	if err != nil {
-		log.Fatal(err)
-	}
+	//_, err := c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_N + "\n")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//err = c.writer.Flush()
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -131,8 +131,8 @@ func (c *Client) computeV() {
 }
 
 func (c *Client) receiveE() {
-	_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_E + "\n")
-	_ = c.writer.Flush()
+	//_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_E + "\n")
+	//_ = c.writer.Flush()
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -170,9 +170,9 @@ func (c *Client) computeX() {
 }
 
 func (c *Client) sendX() {
-	_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_X + "\n")
-	_ = c.writer.Flush()
-	log.Println("Send " + FiatShamirProtocol.COMMAND_GET_X)
+	//_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_X + "\n")
+	//_ = c.writer.Flush()
+	//log.Println("Send " + FiatShamirProtocol.COMMAND_GET_X)
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -184,9 +184,9 @@ func (c *Client) sendX() {
 }
 
 func (c *Client) sendY() {
-	_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_Y + "\n")
-	_ = c.writer.Flush()
-	log.Println("Send " + FiatShamirProtocol.COMMAND_GET_Y)
+	//_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_Y + "\n")
+	//_ = c.writer.Flush()
+	//log.Println("Send " + FiatShamirProtocol.COMMAND_GET_Y)
 
 	time.Sleep(50 * time.Millisecond)
 
@@ -198,9 +198,9 @@ func (c *Client) sendY() {
 }
 
 func (c *Client) sendV() {
-	_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_V + "\n")
-	_ = c.writer.Flush()
-	log.Println("Send " + FiatShamirProtocol.COMMAND_GET_V)
+	//_, _ = c.writer.WriteString(FiatShamirProtocol.COMMAND_GET_V + "\n")
+	//_ = c.writer.Flush()
+	//log.Println("Send " + FiatShamirProtocol.COMMAND_GET_V)
 
 	time.Sleep(50 * time.Millisecond)
 
