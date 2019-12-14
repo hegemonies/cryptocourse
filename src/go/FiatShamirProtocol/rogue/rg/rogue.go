@@ -3,25 +3,33 @@ package rg
 import (
 	"bufio"
 	"cryptocrouse/src/go/FiatShamirProtocol"
+	"cryptocrouse/src/go/Fingerprints"
 	"fmt"
 	"log"
 	"math/big"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
 
 type Rogue struct {
-	conn net.Conn
+	conn   net.Conn
 	reader *bufio.Reader
 	writer *bufio.Writer
-	data *RogueData
+	data   *RogueData
 }
 
 type RogueData struct {
-	V []*big.Int
-	N *big.Int
+	singleV *big.Int
+	V       []*big.Int
+	N       *big.Int
+	R       *big.Int
+	X       *big.Int
+	E       int
+	Y       *big.Int
+	S       *big.Int
 }
 
 func InitRogue() *Rogue {
@@ -61,11 +69,22 @@ func (r *Rogue) setupConnections() {
 
 func (r *Rogue) TryToAcceptSecret() {
 	r.receiveOpenKeys()
+
+	r.generateS()
+
+	var v *big.Int
 	for i := 0; i < len(r.data.V); i++ {
-		flag := r.hackSecret(r.data.V[i])
-		if flag {
-			log.Println("Hack is SUCCESSFUL")
+		v = r.data.V[i]
+		if v != nil {
+			r.data.singleV = v
+			break
 		}
+	}
+
+	flag := r.hackSecret(v)
+	if flag {
+		log.Println("Hack is SUCCESSFUL")
+		return
 	}
 	log.Println("Hack is BAD")
 }
@@ -76,15 +95,6 @@ func (r *Rogue) receiveOpenKeys() {
 }
 
 func (r *Rogue) receiveN() {
-	_, err := r.writer.WriteString(FiatShamirProtocol.COMMAND_GET_N + "\n")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = r.writer.Flush()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	time.Sleep(50 * time.Millisecond)
 
 	msg, err := r.reader.ReadString('\n')
@@ -93,7 +103,7 @@ func (r *Rogue) receiveN() {
 	}
 
 	msg = strings.TrimSuffix(msg, "\n")
-	log.Printf("received N: ~%s~\n", msg)
+	log.Printf("Received N: ~%s~\n", msg)
 
 	var flag bool
 	r.data.N, flag = big.NewInt(0).SetString(msg, 10)
@@ -103,15 +113,6 @@ func (r *Rogue) receiveN() {
 }
 
 func (r *Rogue) receiveV() {
-	_, err := r.writer.WriteString(FiatShamirProtocol.COMMAND_SERVER_GET_V + "\n")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = r.writer.Flush()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	time.Sleep(50 * time.Millisecond)
 
 	msg, err := r.reader.ReadString('\n')
@@ -134,5 +135,133 @@ func (r *Rogue) receiveV() {
 }
 
 func (r *Rogue) hackSecret(v *big.Int) bool {
+	r.sendV()
+	for i := 0; i < 5; i++ {
+		if !r.round() {
+			log.Printf("Can not proof with v=%s on %d iteration\n", v.Text(10), i)
+			return false
+		}
+	}
+	log.Printf("Secret accepted successfuly")
+	r.sendEnd()
+	return true
+}
 
+func (r *Rogue) round() bool {
+	r.generateR()
+	r.computeX()
+	r.sendX()
+
+	r.receiveE()
+	r.computeY()
+	r.sendY()
+	return r.getAnswer()
+}
+
+func (r *Rogue) generateR() {
+	for {
+		r.data.R = Fingerprints.GetBigRandomWithLimit(r.data.N)
+		if r.data.R.Cmp(big.NewInt(1)) > 0 && r.data.R.Cmp(r.data.N) < 0 {
+			break
+		}
+	}
+}
+
+func (r *Rogue) computeX() {
+	r.data.X = big.NewInt(0).Exp(r.data.R, big.NewInt(2), r.data.N)
+}
+
+func (r *Rogue) sendX() {
+	time.Sleep(50 * time.Millisecond)
+
+	_, _ = r.writer.WriteString(r.data.X.Text(10) + "\n")
+	_ = r.writer.Flush()
+	log.Printf("Send X %s\n", r.data.X.Text(10))
+
+	time.Sleep(50 * time.Millisecond)
+}
+
+func (r *Rogue) receiveE() {
+	time.Sleep(50 * time.Millisecond)
+
+	msg, _ := r.reader.ReadString('\n')
+	msg = strings.TrimSuffix(msg, "\n")
+	log.Printf("Received E: %s\n", msg)
+
+	r.data.E, _ = strconv.Atoi(msg)
+}
+
+func (r *Rogue) computeY() {
+	switch r.data.E {
+	case 0:
+		r.data.Y = r.data.R
+	case 1:
+		r.data.Y = big.NewInt(0).Mod(
+			big.NewInt(0).Mul(
+				r.data.S,
+				r.data.R),
+			r.data.N)
+	}
+}
+
+func (r *Rogue) generateS() {
+	for {
+		r.data.S = Fingerprints.GetBigRandomWithLimit(r.data.N)
+		if r.data.S.Cmp(big.NewInt(1)) == 0 {
+			continue
+		}
+		GCD := big.NewInt(0).GCD(
+			nil,
+			nil,
+			r.data.S,
+			r.data.N)
+		if GCD.Cmp(big.NewInt(1)) == 0 {
+			break
+		}
+	}
+}
+
+func (r *Rogue) sendY() {
+	time.Sleep(50 * time.Millisecond)
+
+	_, _ = r.writer.WriteString(r.data.Y.Text(10) + "\n")
+	_ = r.writer.Flush()
+	log.Printf("Send Y %s\n", r.data.Y.Text(10))
+
+	time.Sleep(50 * time.Millisecond)
+}
+
+func (r *Rogue) getAnswer() bool {
+	msg, err := r.reader.ReadString('\n')
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	msg = strings.TrimSuffix(msg, "\n")
+	log.Printf("Received answer: ~%s~\n", msg)
+
+	switch msg {
+	case FiatShamirProtocol.COMMAND_ANSWER_CODE_SUCCESS:
+		return true
+	case FiatShamirProtocol.COMMAND_ANSWER_CODE_ERROR:
+		return false
+	default:
+		return false
+	}
+}
+
+func (r *Rogue) sendEnd() {
+	_, _ = r.writer.WriteString(FiatShamirProtocol.COMMAND_END + "\n")
+	_ = r.writer.Flush()
+}
+
+func (r *Rogue) computeV() {
+	r.data.singleV = big.NewInt(0).Exp(r.data.S, big.NewInt(2), r.data.N)
+}
+
+func (r *Rogue) sendV() {
+	time.Sleep(50 * time.Millisecond)
+	_, _ = r.writer.WriteString(r.data.singleV.Text(10) + "\n")
+	_ = r.writer.Flush()
+	log.Printf("Send V %s\n", r.data.singleV.Text(10))
 }

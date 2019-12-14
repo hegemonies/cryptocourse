@@ -71,62 +71,33 @@ func (s *Server) serverListen() {
 func (s *Server) startRound(conn net.Conn) {
 	r := bufio.NewReader(conn)
 	w := bufio.NewWriter(conn)
-	scanr := bufio.NewScanner(r)
 
 	var x *big.Int
 	var y *big.Int
-	var v *big.Int
-	e := generateE()
 
-	for {
-		scanned := scanr.Scan()
-		if !scanned {
-			if err := scanr.Err(); err != nil {
-				log.Printf("%v(%v)\n", err, conn.RemoteAddr())
-				return
-			}
-			break
-		}
-		msg := scanr.Text()
-		msg = strings.TrimSuffix(msg, "\n")
-		log.Printf("Reveived [%s]: ~%s~\n", conn.RemoteAddr(), msg)
-
-		switch msg {
-		case FiatShamirProtocol.COMMAND_GET_N:
-			s.sendN(w)
-		case FiatShamirProtocol.COMMAND_GET_X:
-			x = s.receiveX(r)
-		case FiatShamirProtocol.COMMAND_GET_Y:
-			y = s.receiveY(r)
-			statusCode := s.computeY(y, x, v, w, e)
-			s.sendAnswerCode(w, statusCode)
-		case FiatShamirProtocol.COMMAND_GET_V:
-			v = s.receiveV(r)
-			s.data.V = append(s.data.V, v)
-		case FiatShamirProtocol.COMMAND_SERVER_GET_V:
-			s.sendV(w)
-		case FiatShamirProtocol.COMMAND_GET_E:
-			s.sendE(w, e)
-		}
+	s.sendN(w)
+	s.sendV(w)
+	v := s.receiveV(r)
+	if v != nil {
+		s.data.V = append(s.data.V, v)
 	}
 
-
-	for t := 0; t < 20; t++ {
-		s.sendN(w)
-		s.sendArrayV(w)
-		v := s.receiveV(r)
-		s.data.V = append(s.data.V, v)
-		x := s.receiveX(r)
+	for t := 0; t < 5; t++ {
+		x = s.receiveX(r)
 		e := generateE()
 		s.sendE(w, e)
 		y = s.receiveY(r)
+		if x == nil || v == nil || y == nil {
+			return
+		}
 		statusCode := s.computeY(y, x, v, w, e)
 		s.sendAnswerCode(w, statusCode)
 		if statusCode == FiatShamirProtocol.COMMAND_ANSWER_CODE_ERROR {
 			log.Printf("Accepting is BAD for [%d]\n", conn.RemoteAddr())
+			return
 		}
 	}
-	log.Printf("Accepting is SUCCESSFUL for [%d]\n", conn.RemoteAddr())
+	log.Printf("Accepting is SUCCESSFUL for [%v]\n", conn.RemoteAddr())
 }
 
 func (s *Server) sendN(w *bufio.Writer) {
@@ -177,7 +148,7 @@ func (s *Server) computeY(y *big.Int, x *big.Int, v *big.Int, w *bufio.Writer, e
 
 	switch e {
 	case 0:
-		r = x
+		r = big.NewInt(0).Mod(x, s.data.N)
 	case 1:
 		r = big.NewInt(0).Mod(
 			big.NewInt(0).Mul(
@@ -222,10 +193,6 @@ func (s *Server) sendV(w *bufio.Writer) {
 	_, _ = w.WriteString(vString + "\n")
 	_ = w.Flush()
 	log.Printf("Send array V %s\n", vString)
-}
-
-func (s *Server) sendArrayV(writer *bufio.Writer) {
-
 }
 
 func generateE() int {
